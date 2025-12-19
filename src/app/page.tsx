@@ -132,6 +132,124 @@ const initialTasks: Task[] = [
     label: "documentation",
     priority: "high",
   },
+  // Generated Tasks
+  {
+    id: "TASK-9102",
+    title:
+      "Synthesizing the optical drive won't do anything, we need to transmit the bluetooth AGP interface!",
+    status: "todo",
+    label: "feature",
+    priority: "high",
+  },
+  {
+    id: "TASK-3421",
+    title:
+      "The RAM port is down, override the 1080p bus so we can quantify the SDD firewall!",
+    status: "backlog",
+    label: "bug",
+    priority: "medium",
+  },
+  {
+    id: "TASK-6754",
+    title:
+      "I'll navigate the multi-byte COM interface, that should feed the RSS array!",
+    status: "done",
+    label: "documentation",
+    priority: "low",
+  },
+  {
+    id: "TASK-8901",
+    title:
+      "If we compress the monitor, we can get to the SSD hard drive through the auxiliary XSS port!",
+    status: "canceled",
+    label: "bug",
+    priority: "high",
+  },
+  {
+    id: "TASK-2345",
+    title: "Use the mobile VGA protocol, then you can hack the primary alarm!",
+    status: "in progress",
+    label: "feature",
+    priority: "medium",
+  },
+  {
+    id: "TASK-6789",
+    title: "We need to bypass the solid state HDD bus!",
+    status: "todo",
+    label: "feature",
+    priority: "low",
+  },
+  {
+    id: "TASK-1234",
+    title:
+      "Connecting the system won't do anything, we need to input the mobile IP alarm!",
+    status: "backlog",
+    label: "bug",
+    priority: "high",
+  },
+  {
+    id: "TASK-9876",
+    title:
+      "The XML interface is down, compress the 1080p pixel so we can parse the IB capacitor!",
+    status: "done",
+    label: "documentation",
+    priority: "medium",
+  },
+  {
+    id: "TASK-4567",
+    title:
+      "Try to back up the JSON interface, maybe it will input the mobile bandwith!",
+    status: "in progress",
+    label: "feature",
+    priority: "low",
+  },
+  {
+    id: "TASK-8765",
+    title:
+      "I'll transmit the neural JBOD card, that should driver the HEX feed!",
+    status: "canceled",
+    label: "documentation",
+    priority: "medium",
+  },
+  {
+    id: "TASK-3210",
+    title:
+      "If we program the capacitor, we can get to the RAM pixel through the online SAS application!",
+    status: "todo",
+    label: "bug",
+    priority: "high",
+  },
+  {
+    id: "TASK-6543",
+    title: "We need to hack the multi-byte HDD bus!",
+    status: "backlog",
+    label: "feature",
+    priority: "medium",
+  },
+  {
+    id: "TASK-5432",
+    title:
+      "Compiling the interface won't do anything, we need to compress the online SDD driver!",
+    status: "done",
+    label: "bug",
+    priority: "low",
+  },
+  {
+    id: "TASK-7654",
+    title:
+      "The CSS card is down, navigate the open-source sensor so we can calculate the RAM panel!",
+    status: "in progress",
+    label: "documentation",
+    priority: "high",
+  },
+  {
+    id: "TASK-2109",
+    title:
+      "I'll index the auxiliary IP feed, that should system the COM firewall!",
+    status: "todo",
+    label: "feature",
+    priority: "medium",
+  },
 ];
 
 export default function TaskPage() {
@@ -139,17 +257,20 @@ export default function TaskPage() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [filteredTasks, setFilteredTasks] =
     React.useState<Task[]>(initialTasks);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(10);
 
   // Filter tasks based on searchQuery
   React.useEffect(() => {
-    if (!searchQuery) {
-      setFilteredTasks(tasks);
-    } else {
+    let result = tasks;
+    if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
-      setFilteredTasks(
-        tasks.filter((task) => task.title.toLowerCase().includes(lowerQuery)),
+      result = tasks.filter((task) =>
+        task.title.toLowerCase().includes(lowerQuery),
       );
     }
+    setFilteredTasks(result);
+    setCurrentPage(1); // Reset to first page on search
   }, [searchQuery, tasks]);
 
   const toggleTaskStatus = (taskId: string, isChecked: boolean) => {
@@ -183,6 +304,12 @@ export default function TaskPage() {
     }
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredTasks.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
+
   // Count selected (done) rows within the filtered set
   const selectedCount = filteredTasks.filter((t) => t.status === "done").length;
 
@@ -192,7 +319,7 @@ export default function TaskPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-2xl font-semibold tracking-tight text-[15px]">
               Task Management System
             </h1>
             {searchQuery ? (
@@ -288,7 +415,7 @@ export default function TaskPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTasks.map((task) => (
+              {paginatedTasks.map((task) => (
                 <TableRow
                   key={task.id}
                   data-state={task.status === "done" ? "selected" : undefined}
@@ -306,15 +433,15 @@ export default function TaskPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <span className="font-medium truncate max-w-[300px] lg:max-w-[500px] text-[15px]">
-                        {task.title}
-                      </span>
                       <Badge
                         variant="outline"
-                        className="ml-2 uppercase text-[10px] font-normal text-muted-foreground shrink-0"
+                        className="mr-2 uppercase text-[10px] font-normal text-muted-foreground shrink-0"
                       >
                         {task.label}
                       </Badge>
+                      <span className="font-medium truncate min-w-0 flex-1 text-[15px]">
+                        {task.title}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -375,12 +502,18 @@ export default function TaskPage() {
           <div className="flex items-center space-x-6 lg:space-x-8">
             <div className="flex items-center space-x-2">
               <p className="text-[15px] font-medium">Rows per page</p>
-              <Select value="10" onValueChange={() => {}}>
+              <Select
+                value={`${pageSize}`}
+                onValueChange={(value: string) => {
+                  setPageSize(Number(value));
+                  setCurrentPage(1);
+                }}
+              >
                 <SelectTrigger className="h-8 w-[70px]">
-                  <SelectValue placeholder="10" />
+                  <SelectValue placeholder={pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top">
-                  {[10, 20, 50, 75].map((pageSize) => (
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
                     <SelectItem key={pageSize} value={`${pageSize}`}>
                       {pageSize}
                     </SelectItem>
@@ -389,22 +522,44 @@ export default function TaskPage() {
               </Select>
             </div>
             <div className="flex w-[100px] items-center justify-center text-[15px] font-medium">
-              Page 1 of 1
+              Page {currentPage} of {totalPages || 1}
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex">
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+              >
                 <span className="sr-only">Go to first page</span>
                 <ChevronsLeft className="h-4 w-4" />
               </Button>
-              <Button variant="outline" className="h-8 w-8 p-0">
+              <Button
+                variant="outline"
+                className="h-8 w-8 p-0"
+                onClick={() => setCurrentPage((curr) => Math.max(1, curr - 1))}
+                disabled={currentPage === 1}
+              >
                 <span className="sr-only">Go to previous page</span>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="outline" className="h-8 w-8 p-0">
+              <Button
+                variant="outline"
+                className="h-8 w-8 p-0"
+                onClick={() =>
+                  setCurrentPage((curr) => Math.min(totalPages, curr + 1))
+                }
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
                 <span className="sr-only">Go to next page</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <Button variant="outline" className="hidden h-8 w-8 p-0 lg:flex">
+              <Button
+                variant="outline"
+                className="hidden h-8 w-8 p-0 lg:flex"
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
                 <span className="sr-only">Go to last page</span>
                 <ChevronsRight className="h-4 w-4" />
               </Button>
