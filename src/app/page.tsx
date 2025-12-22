@@ -56,7 +56,7 @@ type Task = {
 
 const initialTasks: Task[] = [
   {
-    id: "TASK-8782",
+    id: "T-001",
     title:
       "You can't compress the program without bypassing the redundant neural bandwidth matrix",
     status: "in progress",
@@ -64,7 +64,7 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-7878",
+    id: "T-002",
     title:
       "Try to calculate the EXE feed, maybe it will index the multi-byte pixel array",
     status: "in progress",
@@ -72,14 +72,14 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-7839",
+    id: "T-003",
     title: "We need to bypass the neural TCP card!",
     status: "in progress",
     label: "bug",
     priority: "high",
   },
   {
-    id: "TASK-5562",
+    id: "T-004",
     title:
       "The SAS interface is down, bypass the open-source pixel so we can backup the PNG bandwidth",
     status: "in progress",
@@ -87,7 +87,7 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-8686",
+    id: "T-005",
     title:
       "I'll parse the wireless SSL protocol, that should driver the API panel",
     status: "in progress",
@@ -95,14 +95,14 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-1280",
+    id: "T-006",
     title: "Use the digital TLS panel, then you can transmit the haptic alarm!",
     status: "in progress",
     label: "bug",
     priority: "high",
   },
   {
-    id: "TASK-7262",
+    id: "T-007",
     title:
       "The UTF8 application is down, parse the neural bandwidth so we can back up the PNG firewall",
     status: "in progress",
@@ -110,7 +110,7 @@ const initialTasks: Task[] = [
     priority: "high",
   },
   {
-    id: "TASK-1138",
+    id: "T-008",
     title:
       "Generating the driver won't do anything, we need to quantify the 1080p LDL pixel!",
     status: "in progress",
@@ -118,14 +118,14 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-7184",
+    id: "T-009",
     title: "We need to program the back-end THX pixel!",
     status: "in progress",
     label: "feature",
     priority: "low",
   },
   {
-    id: "TASK-5160",
+    id: "T-010",
     title:
       "Calculating the bus won't do anything, we need to navigate the cross-platform JSON interface!",
     status: "in progress",
@@ -134,7 +134,7 @@ const initialTasks: Task[] = [
   },
   // Generated Tasks
   {
-    id: "TASK-9102",
+    id: "T-011",
     title:
       "Synthesizing the optical drive won't do anything, we need to transmit the bluetooth AGP interface!",
     status: "todo",
@@ -142,7 +142,7 @@ const initialTasks: Task[] = [
     priority: "high",
   },
   {
-    id: "TASK-3421",
+    id: "T-012",
     title:
       "The RAM port is down, override the 1080p bus so we can quantify the SDD firewall!",
     status: "backlog",
@@ -150,7 +150,7 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-6754",
+    id: "T-013",
     title:
       "I'll navigate the multi-byte COM interface, that should feed the RSS array!",
     status: "done",
@@ -158,7 +158,7 @@ const initialTasks: Task[] = [
     priority: "low",
   },
   {
-    id: "TASK-8901",
+    id: "T-014",
     title:
       "If we compress the monitor, we can get to the SSD hard drive through the auxiliary XSS port!",
     status: "canceled",
@@ -166,21 +166,21 @@ const initialTasks: Task[] = [
     priority: "high",
   },
   {
-    id: "TASK-2345",
+    id: "T-015",
     title: "Use the mobile VGA protocol, then you can hack the primary alarm!",
     status: "in progress",
     label: "feature",
     priority: "medium",
   },
   {
-    id: "TASK-6789",
+    id: "T-016",
     title: "We need to bypass the solid state HDD bus!",
     status: "todo",
     label: "feature",
     priority: "low",
   },
   {
-    id: "TASK-1234",
+    id: "T-017",
     title:
       "Connecting the system won't do anything, we need to input the mobile IP alarm!",
     status: "backlog",
@@ -188,7 +188,7 @@ const initialTasks: Task[] = [
     priority: "high",
   },
   {
-    id: "TASK-9876",
+    id: "T-018",
     title:
       "The XML interface is down, compress the 1080p pixel so we can parse the IB capacitor!",
     status: "done",
@@ -196,7 +196,7 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-4567",
+    id: "T-019",
     title:
       "Try to back up the JSON interface, maybe it will input the mobile bandwith!",
     status: "in progress",
@@ -204,7 +204,7 @@ const initialTasks: Task[] = [
     priority: "low",
   },
   {
-    id: "TASK-8765",
+    id: "T-020",
     title:
       "I'll transmit the neural JBOD card, that should driver the HEX feed!",
     status: "canceled",
@@ -212,7 +212,7 @@ const initialTasks: Task[] = [
     priority: "medium",
   },
   {
-    id: "TASK-3210",
+    id: "T-021",
     title:
       "If we program the capacitor, we can get to the RAM pixel through the online SAS application!",
     status: "todo",
@@ -220,14 +220,14 @@ const initialTasks: Task[] = [
     priority: "high",
   },
   {
-    id: "TASK-6543",
+    id: "T-022",
     title: "We need to hack the multi-byte HDD bus!",
     status: "backlog",
     label: "feature",
     priority: "medium",
   },
   {
-    id: "TASK-5432",
+    id: "T-023",
     title:
       "Compiling the interface won't do anything, we need to compress the online SDD driver!",
     status: "done",
@@ -235,7 +235,7 @@ const initialTasks: Task[] = [
     priority: "low",
   },
   {
-    id: "TASK-7654",
+    id: "T-024",
     title:
       "The CSS card is down, navigate the open-source sensor so we can calculate the RAM panel!",
     status: "in progress",
@@ -243,7 +243,7 @@ const initialTasks: Task[] = [
     priority: "high",
   },
   {
-    id: "TASK-2109",
+    id: "T-025",
     title:
       "I'll index the auxiliary IP feed, that should system the COM firewall!",
     status: "todo",
@@ -315,19 +315,19 @@ export default function TaskPage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <div className="flex flex-col gap-8 p-8 max-w-[1400px] mx-auto w-full text-foreground text-[15px]">
+      <div className="flex flex-col gap-8 p-8 max-w-[1400px] mx-auto w-full text-foreground">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-semibold tracking-tight text-[15px]">
+            <h1 className="text-2xl font-semibold tracking-tight">
               Task Management System
             </h1>
             {searchQuery ? (
-              <p className="text-muted-foreground text-[15px]">
+              <p className="text-muted-foreground">
                 {filteredTasks.length} results found
               </p>
             ) : (
-              <p className="text-muted-foreground text-[15px]">
+              <p className="text-muted-foreground">
                 {tasks.filter((t) => t.status !== "done").length} tasks pending.{" "}
                 {tasks.filter((t) => t.status === "done").length} tasks
                 completed..
@@ -349,32 +349,24 @@ export default function TaskPage() {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Filter tasks..."
-                className="pl-9 w-[250px] lg:w-[350px] text-[15px]"
+                className="pl-9 w-[250px] lg:w-[350px]"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-dashed h-8 text-[15px]"
-            >
+            <Button variant="outline" size="sm" className="border-dashed h-8">
               <PlusCircle className="mr-2 h-4 w-4" />
               Status
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-dashed h-8 text-[15px]"
-            >
+            <Button variant="outline" size="sm" className="border-dashed h-8">
               <PlusCircle className="mr-2 h-4 w-4" />
               Priority
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 lg:px-3 text-[15px]"
+              className="h-8 px-2 lg:px-3"
               onClick={() => setSearchQuery("")}
             >
               Reset
@@ -385,12 +377,12 @@ export default function TaskPage() {
             <Button
               variant="outline"
               size="sm"
-              className="ml-auto hidden h-8 lg:flex text-[15px]"
+              className="ml-auto hidden h-8 lg:flex"
             >
               <Settings2 className="mr-2 h-4 w-4" />
               View
             </Button>
-            <Button size="sm" className="h-8 text-[15px]">
+            <Button size="sm" className="h-8">
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Task
             </Button>
@@ -402,16 +394,15 @@ export default function TaskPage() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[50px] pl-4 text-[15px]">
+                <TableHead className="w-[50px] pl-4">
                   <Checkbox />
                 </TableHead>
-                <TableHead className="w-[100px] text-[15px]">Task</TableHead>
-                <TableHead className="text-[15px]">Title</TableHead>
-                <TableHead className="w-[150px] text-[15px]">Status</TableHead>
-                <TableHead className="w-[100px] text-[15px]">
-                  Priority
-                </TableHead>
-                <TableHead className="w-[50px] text-[15px]"></TableHead>
+                <TableHead className="w-[80px]">Serial</TableHead>
+                <TableHead className="w-[100px]">Tags</TableHead>
+                <TableHead className="">Title</TableHead>
+                <TableHead className="w-[150px]">Status</TableHead>
+                <TableHead className="w-[100px]">Priority</TableHead>
+                <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -428,24 +419,22 @@ export default function TaskPage() {
                       }
                     />
                   </TableCell>
-                  <TableCell className="font-medium text-[15px]">
-                    {task.id}
+                  <TableCell className="font-medium">{task.id}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className="uppercase text-[10px] font-normal text-muted-foreground"
+                    >
+                      {task.label}
+                    </Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className="mr-2 uppercase text-[10px] font-normal text-muted-foreground shrink-0"
-                      >
-                        {task.label}
-                      </Badge>
-                      <span className="font-medium truncate min-w-0 flex-1 text-[15px]">
-                        {task.title}
-                      </span>
-                    </div>
+                    <span className="font-medium truncate block">
+                      {task.title}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <div className="flex w-[100px] items-center gap-2 text-[15px]">
+                    <div className="flex w-[100px] items-center gap-2">
                       {getStatusIcon(task.status)}
                       <span className="capitalize text-muted-foreground">
                         {task.status}
@@ -453,7 +442,7 @@ export default function TaskPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2 text-[15px]">
+                    <div className="flex items-center gap-2">
                       {task.priority === "high" && (
                         <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
                       )}
@@ -496,12 +485,12 @@ export default function TaskPage() {
 
         {/* Pagination */}
         <div className="flex items-center justify-between px-2">
-          <div className="flex-1 text-[15px] text-muted-foreground">
+          <div className="flex-1 text-muted-foreground">
             {selectedCount} of {filteredTasks.length} row(s) selected.
           </div>
           <div className="flex items-center space-x-6 lg:space-x-8">
             <div className="flex items-center space-x-2">
-              <p className="text-[15px] font-medium">Rows per page</p>
+              <p className="font-medium">Rows per page</p>
               <Select
                 value={`${pageSize}`}
                 onValueChange={(value: string) => {
@@ -521,7 +510,7 @@ export default function TaskPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex w-[100px] items-center justify-center text-[15px] font-medium">
+            <div className="flex w-[100px] items-center justify-center font-medium">
               Page {currentPage} of {totalPages || 1}
             </div>
             <div className="flex items-center space-x-2">
