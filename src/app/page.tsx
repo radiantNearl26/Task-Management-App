@@ -330,7 +330,7 @@ export default function TaskPage() {
               <p className="text-muted-foreground">
                 {tasks.filter((t) => t.status !== "done").length} tasks pending.{" "}
                 {tasks.filter((t) => t.status === "done").length} tasks
-                completed..
+                completed.
               </p>
             )}
           </div>
