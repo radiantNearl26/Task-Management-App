@@ -5,6 +5,8 @@ import {
   MoreHorizontal,
   Search,
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   CheckCircle2,
   Circle,
   HelpCircle,
@@ -252,26 +254,106 @@ const initialTasks: Task[] = [
   },
 ];
 
+type SearchType = "title" | "status" | "priority";
+type SortDirection = "asc" | "desc";
+type SortConfig = {
+  key: keyof Task;
+  direction: SortDirection;
+};
+
 export default function TaskPage() {
   const [tasks, setTasks] = React.useState<Task[]>(initialTasks);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [filteredTasks, setFilteredTasks] =
-    React.useState<Task[]>(initialTasks);
+  const [searchType, setSearchType] = React.useState<SearchType>("title");
+  const [sortConfig, setSortConfig] = React.useState<SortConfig>({
+    key: "id",
+    direction: "asc",
+  });
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Filter tasks based on searchQuery
+  // Keyboard Shortcuts
   React.useEffect(() => {
-    let result = tasks;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Focus search on 'f'
+      if (
+        e.key.toLowerCase() === "f" &&
+        !e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        document.activeElement !== searchInputRef.current
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+
+      // Reset/Blur on 'Escape'
+      if (e.key === "Escape") {
+        if (
+          document.activeElement === searchInputRef.current &&
+          searchQuery.length > 0
+        ) {
+          setSearchQuery("");
+        } else if (document.activeElement === searchInputRef.current) {
+          searchInputRef.current?.blur();
+        } else if (searchQuery.length > 0) {
+          setSearchQuery("");
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [searchQuery]);
+
+  // Derived State: Filters & Sorting
+  const filteredTasks = React.useMemo(() => {
+    let result = [...tasks];
+
+    // Filter
     if (searchQuery) {
       const lowerQuery = searchQuery.toLowerCase();
-      result = tasks.filter((task) =>
-        task.title.toLowerCase().includes(lowerQuery),
-      );
+      result = result.filter((task) => {
+        if (searchType === "title")
+          return task.title.toLowerCase().includes(lowerQuery);
+        if (searchType === "status")
+          return task.status.toLowerCase().includes(lowerQuery);
+        if (searchType === "priority")
+          return task.priority.toLowerCase().includes(lowerQuery);
+        return false;
+      });
     }
-    setFilteredTasks(result);
-    setCurrentPage(1); // Reset to first page on search
-  }, [searchQuery, tasks]);
+
+    // Sort
+    const modifier = sortConfig.direction === "asc" ? 1 : -1;
+    result.sort((a, b) => {
+      let valueA: any = a[sortConfig.key];
+      let valueB: any = b[sortConfig.key];
+
+      // Custom Priority Sort
+      if (sortConfig.key === "priority") {
+        const priorityMap: Record<string, number> = {
+          high: 3,
+          medium: 2,
+          low: 1,
+        };
+        valueA = priorityMap[a.priority] || 0;
+        valueB = priorityMap[b.priority] || 0;
+      }
+
+      if (valueA < valueB) return -1 * modifier;
+      if (valueA > valueB) return 1 * modifier;
+      return 0;
+    });
+
+    return result;
+  }, [tasks, searchQuery, searchType, sortConfig]);
+
+  // Reset pagination when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, searchType, sortConfig]);
 
   const toggleTaskStatus = (taskId: string, isChecked: boolean) => {
     setTasks((prevTasks) =>
@@ -285,6 +367,24 @@ export default function TaskPage() {
         return task;
       }),
     );
+  };
+
+  const handleSort = (key: keyof Task) => {
+    setSortConfig((current) => ({
+      key,
+      direction:
+        current.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
+  const getSortIcon = (key: keyof Task) => {
+    if (sortConfig.key !== key)
+      return (
+        <ArrowUpDown className="ml-2 h-3 w-3 text-muted-foreground opacity-50" />
+      );
+    if (sortConfig.direction === "asc")
+      return <ArrowUp className="ml-2 h-3 w-3 text-foreground" />;
+    return <ArrowDown className="ml-2 h-3 w-3 text-foreground" />;
   };
 
   const getStatusIcon = (status: string) => {
@@ -324,7 +424,8 @@ export default function TaskPage() {
             </h1>
             {searchQuery ? (
               <p className="text-muted-foreground">
-                {filteredTasks.length} results found
+                {filteredTasks.length} results found for "{searchQuery}" in{" "}
+                {searchType}
               </p>
             ) : (
               <p className="text-muted-foreground">
@@ -345,32 +446,55 @@ export default function TaskPage() {
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-1">
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <div className="relative w-full max-w-sm group">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
               <Input
-                placeholder="Filter tasks..."
-                className="pl-9 w-[250px] lg:w-[350px]"
+                ref={searchInputRef}
+                placeholder={`Filter via ${searchType}...`}
+                className="pl-9 pr-10 w-[250px] lg:w-[350px] hover:border-primary transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              <kbd className="pointer-events-none absolute right-2.5 top-2.5 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">F</span>
+              </kbd>
             </div>
 
-            <Button variant="outline" size="sm" className="border-dashed h-8">
+            <Button
+              variant={searchType === "status" ? "default" : "outline"}
+              size="sm"
+              className="h-8"
+              onClick={() =>
+                setSearchType(searchType === "status" ? "title" : "status")
+              }
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               Status
             </Button>
-            <Button variant="outline" size="sm" className="border-dashed h-8">
+            <Button
+              variant={searchType === "priority" ? "default" : "outline"}
+              size="sm"
+              className="h-8"
+              onClick={() =>
+                setSearchType(searchType === "priority" ? "title" : "priority")
+              }
+            >
               <PlusCircle className="mr-2 h-4 w-4" />
               Priority
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               className="h-8 px-2 lg:px-3"
-              onClick={() => setSearchQuery("")}
+              onClick={() => {
+                setSearchQuery("");
+                setSearchType("title");
+              }}
             >
               Reset
-              <X className="ml-2 h-4 w-4" />
+              <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                Esc
+              </kbd>
             </Button>
           </div>
           <div className="flex items-center gap-2">
@@ -397,11 +521,51 @@ export default function TaskPage() {
                 <TableHead className="w-[50px] pl-4">
                   <Checkbox />
                 </TableHead>
-                <TableHead className="w-[80px]">Serial</TableHead>
-                <TableHead className="w-[100px]">Tags</TableHead>
-                <TableHead className="">Title</TableHead>
-                <TableHead className="w-[150px]">Status</TableHead>
-                <TableHead className="w-[100px]">Priority</TableHead>
+                <TableHead
+                  className="w-[100px] cursor-pointer hover:text-foreground transition-colors"
+                  onClick={() => handleSort("id")}
+                >
+                  <div className="flex items-center">
+                    Serial
+                    {getSortIcon("id")}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="w-[100px] cursor-pointer hover:text-foreground transition-colors"
+                  onClick={() => handleSort("label")}
+                >
+                  <div className="flex items-center">
+                    Tags
+                    {getSortIcon("label")}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-foreground transition-colors"
+                  onClick={() => handleSort("title")}
+                >
+                  <div className="flex items-center">
+                    Title
+                    {getSortIcon("title")}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
+                  onClick={() => handleSort("status")}
+                >
+                  <div className="flex items-center">
+                    Status
+                    {getSortIcon("status")}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
+                  onClick={() => handleSort("priority")}
+                >
+                  <div className="flex items-center">
+                    Priority
+                    {getSortIcon("priority")}
+                  </div>
+                </TableHead>
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
