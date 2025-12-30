@@ -31,7 +31,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -47,6 +46,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
+import { Kbd } from "@/components/ui/kbd";
 
 type Task = {
   id: string;
@@ -446,24 +451,27 @@ export default function TaskPage() {
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-1">
-            <div className="relative w-full max-w-sm group">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-              <Input
+            <InputGroup className="w-[250px] lg:w-[350px] group">
+              <InputGroupInput
                 ref={searchInputRef}
                 placeholder={`Filter via ${searchType}...`}
-                className="pl-9 pr-10 w-[250px] lg:w-[350px] hover:border-primary transition-colors"
+                className="pl-9 pr-10 hover:border-primary transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <kbd className="pointer-events-none absolute right-2.5 top-2.5 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                <span className="text-xs">F</span>
-              </kbd>
-            </div>
+              <InputGroupAddon className="pointer-events-none group-hover:text-foreground transition-colors">
+                <Search className="h-4 w-4" />
+              </InputGroupAddon>
+              <InputGroupAddon
+                align="inline-end"
+                className="pointer-events-none"
+              >
+                <Kbd>F</Kbd>
+              </InputGroupAddon>
+            </InputGroup>
 
             <Button
               variant={searchType === "status" ? "default" : "outline"}
-              size="sm"
-              className="h-8"
               onClick={() =>
                 setSearchType(searchType === "status" ? "title" : "status")
               }
@@ -473,8 +481,6 @@ export default function TaskPage() {
             </Button>
             <Button
               variant={searchType === "priority" ? "default" : "outline"}
-              size="sm"
-              className="h-8"
               onClick={() =>
                 setSearchType(searchType === "priority" ? "title" : "priority")
               }
@@ -484,29 +490,22 @@ export default function TaskPage() {
             </Button>
             <Button
               variant="outline"
-              size="sm"
-              className="h-8 px-2 lg:px-3"
+              className="px-2 lg:px-3"
               onClick={() => {
                 setSearchQuery("");
                 setSearchType("title");
               }}
             >
               Reset
-              <kbd className="pointer-events-none ml-2 inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                Esc
-              </kbd>
+              <Kbd className="ml-2">Esc</Kbd>
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="ml-auto hidden h-8 lg:flex"
-            >
+            <Button variant="outline" className="ml-auto hidden lg:flex">
               <Settings2 className="mr-2 h-4 w-4" />
               View
             </Button>
-            <Button size="sm" className="h-8">
+            <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Task
             </Button>
