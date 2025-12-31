@@ -32,6 +32,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
   Table,
   TableBody,
   TableCell,
@@ -277,6 +288,10 @@ export default function TaskPage() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [showDeleteSuccess, setShowDeleteSuccess] = React.useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
 
   // Keyboard Shortcuts
   React.useEffect(() => {
@@ -429,8 +444,8 @@ export default function TaskPage() {
             </h1>
             {searchQuery ? (
               <p className="text-muted-foreground">
-                {filteredTasks.length} results found for "{searchQuery}" in{" "}
-                {searchType}
+                {filteredTasks.length} results found for &quot;
+                {searchQuery}&quot; in {searchType}
               </p>
             ) : (
               <p className="text-muted-foreground">
@@ -438,6 +453,17 @@ export default function TaskPage() {
                 {tasks.filter((t) => t.status === "done").length} tasks
                 completed.
               </p>
+            )}
+            {showDeleteSuccess && (
+              <Alert className="mt-4 border-green-500 text-green-600 [&>svg]:text-green-600">
+                <CheckCircle2 className="h-4 w-4" />
+                <AlertTitle>
+                  Success! Your task has been successfully trashed.
+                </AlertTitle>
+                <AlertDescription>
+                  Gone.. Gayaa.. Tataa.. Bye Byeee!
+                </AlertDescription>
+              </Alert>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -636,7 +662,14 @@ export default function TaskPage() {
                         <DropdownMenuItem>Make a copy</DropdownMenuItem>
                         <DropdownMenuItem>Favorite</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setTaskToDelete(task.id);
+                            setDeleteDialogOpen(true);
+                          }}
+                        >
+                          Delete
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -645,6 +678,36 @@ export default function TaskPage() {
             </TableBody>
           </Table>
         </div>
+
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will only move your task from the records to the trash bin.
+                Clear the trash if you wish to delete it permanently.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                onClick={() => {
+                  setTaskToDelete(null);
+                  setDeleteDialogOpen(false);
+                }}
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  setShowDeleteSuccess(true);
+                  setDeleteDialogOpen(false);
+                }}
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Pagination */}
         <div className="flex items-center justify-between px-2">
