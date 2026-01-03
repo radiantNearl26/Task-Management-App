@@ -20,6 +20,7 @@ import {
   ChevronsRight,
 } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -290,8 +291,24 @@ export default function TaskPage() {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [showDeleteSuccess, setShowDeleteSuccess] = React.useState(false);
+  const [isExiting, setIsExiting] = React.useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (showDeleteSuccess) {
+      setIsExiting(false);
+      const exitTimer = setTimeout(() => setIsExiting(true), 4500);
+      const closeTimer = setTimeout(() => {
+        setShowDeleteSuccess(false);
+        setIsExiting(false);
+      }, 5000);
+      return () => {
+        clearTimeout(exitTimer);
+        clearTimeout(closeTimer);
+      };
+    }
+  }, [showDeleteSuccess]);
 
   // Keyboard Shortcuts
   React.useEffect(() => {
@@ -455,15 +472,24 @@ export default function TaskPage() {
               </p>
             )}
             {showDeleteSuccess && (
-              <Alert className="mt-4 border-green-500 text-green-600 [&>svg]:text-green-600">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertTitle>
-                  Success! Your task has been successfully trashed.
-                </AlertTitle>
-                <AlertDescription>
-                  Gone.. Gayaa.. Tataa.. Bye Byeee!
-                </AlertDescription>
-              </Alert>
+              <div
+                className={cn(
+                  "fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 transform transition-all duration-500",
+                  isExiting
+                    ? "animate-out slide-out-to-bottom fade-out"
+                    : "animate-in slide-in-from-bottom fade-in",
+                )}
+              >
+                <Alert className="border-green-500 bg-background text-green-600 shadow-lg [&>svg]:text-green-600">
+                  <CheckCircle2 className="h-4 w-4" />
+                  <AlertTitle>
+                    Success! Your task has been successfully trashed.
+                  </AlertTitle>
+                  <AlertDescription>
+                    Gone.. Gayaa.. Tataa.. Bye Byeee!
+                  </AlertDescription>
+                </Alert>
+              </div>
             )}
           </div>
           <div className="flex items-center gap-2">
