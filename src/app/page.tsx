@@ -480,7 +480,7 @@ export default function TaskPage() {
                     : "animate-in slide-in-from-bottom fade-in",
                 )}
               >
-                <Alert className="border-green-500 bg-background text-green-600 shadow-lg [&>svg]:text-green-600">
+                <Alert>
                   <CheckCircle2 className="h-4 w-4" />
                   <AlertTitle>
                     Success! Your task has been successfully trashed.
@@ -753,8 +753,8 @@ export default function TaskPage() {
                 <SelectTrigger className="h-8 w-[70px]">
                   <SelectValue placeholder={pageSize} />
                 </SelectTrigger>
-                <SelectContent side="top">
-                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                <SelectContent side="top" position="popper" align="start">
+                  {[10, 25, 50, 100].map((pageSize) => (
                     <SelectItem key={pageSize} value={`${pageSize}`}>
                       {pageSize}
                     </SelectItem>
