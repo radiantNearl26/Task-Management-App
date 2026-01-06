@@ -327,15 +327,12 @@ export default function TaskPage() {
 
       // Reset/Blur on 'Escape'
       if (e.key === "Escape") {
-        if (
-          document.activeElement === searchInputRef.current &&
-          searchQuery.length > 0
-        ) {
-          setSearchQuery("");
-        } else if (document.activeElement === searchInputRef.current) {
+        if (document.activeElement === searchInputRef.current) {
           searchInputRef.current?.blur();
-        } else if (searchQuery.length > 0) {
           setSearchQuery("");
+        } else {
+          setSearchQuery("");
+          setSearchType("title");
         }
       }
     };
@@ -566,7 +563,7 @@ export default function TaskPage() {
 
         {/* Task List Table */}
         <div className="rounded-md border bg-card text-card-foreground shadow-sm">
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[50px] pl-4">
@@ -582,7 +579,7 @@ export default function TaskPage() {
                   </div>
                 </TableHead>
                 <TableHead
-                  className="w-[100px] cursor-pointer hover:text-foreground transition-colors"
+                  className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => handleSort("label")}
                 >
                   <div className="flex items-center">
