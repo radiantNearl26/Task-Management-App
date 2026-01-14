@@ -18,9 +18,10 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  OctagonAlert,
+  CalendarClock,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -64,6 +64,14 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Kbd } from "@/components/ui/kbd";
+import { toast } from "sonner";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 type Task = {
   id: string;
@@ -290,25 +298,7 @@ export default function TaskPage() {
   const [pageSize, setPageSize] = React.useState(10);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [showDeleteSuccess, setShowDeleteSuccess] = React.useState(false);
-  const [isExiting, setIsExiting] = React.useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (showDeleteSuccess) {
-      setIsExiting(false);
-      const exitTimer = setTimeout(() => setIsExiting(true), 4500);
-      const closeTimer = setTimeout(() => {
-        setShowDeleteSuccess(false);
-        setIsExiting(false);
-      }, 5000);
-      return () => {
-        clearTimeout(exitTimer);
-        clearTimeout(closeTimer);
-      };
-    }
-  }, [showDeleteSuccess]);
 
   // Keyboard Shortcuts
   React.useEffect(() => {
@@ -468,26 +458,6 @@ export default function TaskPage() {
                 completed.
               </p>
             )}
-            {showDeleteSuccess && (
-              <div
-                className={cn(
-                  "fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 transform transition-all duration-500",
-                  isExiting
-                    ? "animate-out slide-out-to-bottom fade-out"
-                    : "animate-in slide-in-from-bottom fade-in",
-                )}
-              >
-                <Alert>
-                  <CheckCircle2 className="h-4 w-4" />
-                  <AlertTitle>
-                    Success! Your task has been successfully trashed.
-                  </AlertTitle>
-                  <AlertDescription>
-                    Gone.. Gayaa.. Tataa.. Bye Byeee!
-                  </AlertDescription>
-                </Alert>
-              </div>
-            )}
           </div>
           <div className="flex items-center gap-2">
             <Avatar>
@@ -525,7 +495,7 @@ export default function TaskPage() {
                 setSearchType(searchType === "status" ? "title" : "status")
               }
             >
-              <PlusCircle className="mr-2 h-4 w-4" />
+              <CalendarClock className="" />
               Status
             </Button>
             <Button
@@ -534,28 +504,27 @@ export default function TaskPage() {
                 setSearchType(searchType === "priority" ? "title" : "priority")
               }
             >
-              <PlusCircle className="mr-2 h-4 w-4" />
+              <OctagonAlert className="" />
               Priority
             </Button>
             <Button
               variant="outline"
-              className="px-2 lg:px-3"
               onClick={() => {
                 setSearchQuery("");
                 setSearchType("title");
               }}
             >
               Reset
-              <Kbd className="ml-2">Esc</Kbd>
+              <Kbd className="ml-1">Esc</Kbd>
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" className="ml-auto hidden lg:flex">
-              <Settings2 className="mr-2 h-4 w-4" />
+              <Settings2 className="" />
               View
             </Button>
             <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
+              <PlusCircle className="" />
               Add Task
             </Button>
           </div>
@@ -619,84 +588,106 @@ export default function TaskPage() {
             </TableHeader>
             <TableBody>
               {paginatedTasks.map((task) => (
-                <TableRow
-                  key={task.id}
-                  data-state={task.status === "done" ? "selected" : undefined}
-                >
-                  <TableCell className="pl-4">
-                    <Checkbox
-                      checked={task.status === "done"}
-                      onCheckedChange={(checked) =>
-                        toggleTaskStatus(task.id, checked as boolean)
+                <ContextMenu key={task.id}>
+                  <ContextMenuTrigger asChild>
+                    <TableRow
+                      data-state={
+                        task.status === "done" ? "selected" : undefined
                       }
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">{task.id}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="uppercase text-[10px] font-normal text-muted-foreground"
                     >
-                      {task.label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="font-medium truncate block">
-                      {task.title}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex w-[100px] items-center gap-2">
-                      {getStatusIcon(task.status)}
-                      <span className="capitalize text-muted-foreground">
-                        {task.status}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {task.priority === "high" && (
-                        <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
-                      )}
-                      {task.priority === "medium" && (
-                        <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
-                      )}
-                      {task.priority === "low" && (
-                        <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
-                      )}
-                      <span className="capitalize text-muted-foreground">
-                        {task.priority}
-                      </span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                      <TableCell className="pl-4">
+                        <Checkbox
+                          checked={task.status === "done"}
+                          onCheckedChange={(checked) =>
+                            toggleTaskStatus(task.id, checked as boolean)
+                          }
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{task.id}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="outline"
+                          className="uppercase text-[10px] font-normal text-muted-foreground"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Open menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-[160px]">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-                        <DropdownMenuItem>Favorite</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setTaskToDelete(task.id);
-                            setDeleteDialogOpen(true);
-                          }}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                          {task.label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-medium truncate block">
+                          {task.title}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex w-[100px] items-center gap-2">
+                          {getStatusIcon(task.status)}
+                          <span className="capitalize text-muted-foreground">
+                            {task.status}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {task.priority === "high" && (
+                            <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
+                          )}
+                          {task.priority === "medium" && (
+                            <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                          )}
+                          {task.priority === "low" && (
+                            <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
+                          )}
+                          <span className="capitalize text-muted-foreground">
+                            {task.priority}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-[160px]"
+                          >
+                            <DropdownMenuItem>Edit</DropdownMenuItem>
+                            <DropdownMenuItem>Make a copy</DropdownMenuItem>
+                            <DropdownMenuItem>Favorite</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setTaskToDelete(task.id);
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="w-[160px]">
+                    <ContextMenuItem>Edit</ContextMenuItem>
+                    <ContextMenuItem>Make a copy</ContextMenuItem>
+                    <ContextMenuItem>Favorite</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                      onClick={() => {
+                        setTaskToDelete(task.id);
+                        setDeleteDialogOpen(true);
+                      }}
+                    >
+                      Delete
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
               ))}
             </TableBody>
           </Table>
@@ -722,7 +713,18 @@ export default function TaskPage() {
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  setShowDeleteSuccess(true);
+                  toast.promise<{ name: string }>(
+                    () =>
+                      new Promise((resolve) =>
+                        setTimeout(() => resolve({ name: "Event" }), 2000),
+                      ),
+                    {
+                      loading: "Loading...",
+                      success: () =>
+                        `Task ${taskToDelete} has been trashed!`,
+                      error: "Error",
+                    },
+                  );
                   setDeleteDialogOpen(false);
                 }}
               >
