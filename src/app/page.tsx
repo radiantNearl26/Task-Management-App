@@ -28,8 +28,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -299,6 +301,17 @@ export default function TaskPage() {
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
+  const [visibleColumns, setVisibleColumns] = React.useState<Set<string>>(
+    new Set(["id", "label", "title", "status", "priority"]),
+  );
+
+  const columns = [
+    { id: "id", label: "Serial" },
+    { id: "label", label: "Tags" },
+    { id: "title", label: "Title" },
+    { id: "status", label: "Status" },
+    { id: "priority", label: "Priority" },
+  ];
 
   // Keyboard Shortcuts
   React.useEffect(() => {
@@ -519,10 +532,34 @@ export default function TaskPage() {
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="ml-auto hidden lg:flex">
-              <Settings2 className="" />
-              View
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-auto hidden lg:flex">
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  View
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-[150px]">
+                <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {columns.map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    checked={visibleColumns.has(column.id)}
+                    onCheckedChange={(checked) => {
+                      setVisibleColumns((prev) => {
+                        const next = new Set(prev);
+                        if (checked) next.add(column.id);
+                        else next.delete(column.id);
+                        return next;
+                      });
+                    }}
+                  >
+                    {column.label}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button>
               <PlusCircle className="" />
               Add Task
@@ -538,51 +575,61 @@ export default function TaskPage() {
                 <TableHead className="w-[50px] pl-4">
                   <Checkbox />
                 </TableHead>
-                <TableHead
-                  className="w-[100px] cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort("id")}
-                >
-                  <div className="flex items-center">
-                    Serial
-                    {getSortIcon("id")}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort("label")}
-                >
-                  <div className="flex items-center">
-                    Tags
-                    {getSortIcon("label")}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort("title")}
-                >
-                  <div className="flex items-center">
-                    Title
-                    {getSortIcon("title")}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort("status")}
-                >
-                  <div className="flex items-center">
-                    Status
-                    {getSortIcon("status")}
-                  </div>
-                </TableHead>
-                <TableHead
-                  className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
-                  onClick={() => handleSort("priority")}
-                >
-                  <div className="flex items-center">
-                    Priority
-                    {getSortIcon("priority")}
-                  </div>
-                </TableHead>
+                {visibleColumns.has("id") && (
+                  <TableHead
+                    className="w-[100px] cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("id")}
+                  >
+                    <div className="flex items-center">
+                      Serial
+                      {getSortIcon("id")}
+                    </div>
+                  </TableHead>
+                )}
+                {visibleColumns.has("label") && (
+                  <TableHead
+                    className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("label")}
+                  >
+                    <div className="flex items-center">
+                      Tags
+                      {getSortIcon("label")}
+                    </div>
+                  </TableHead>
+                )}
+                {visibleColumns.has("title") && (
+                  <TableHead
+                    className="cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("title")}
+                  >
+                    <div className="flex items-center">
+                      Title
+                      {getSortIcon("title")}
+                    </div>
+                  </TableHead>
+                )}
+                {visibleColumns.has("status") && (
+                  <TableHead
+                    className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("status")}
+                  >
+                    <div className="flex items-center">
+                      Status
+                      {getSortIcon("status")}
+                    </div>
+                  </TableHead>
+                )}
+                {visibleColumns.has("priority") && (
+                  <TableHead
+                    className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
+                    onClick={() => handleSort("priority")}
+                  >
+                    <div className="flex items-center">
+                      Priority
+                      {getSortIcon("priority")}
+                    </div>
+                  </TableHead>
+                )}
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -603,44 +650,54 @@ export default function TaskPage() {
                           }
                         />
                       </TableCell>
-                      <TableCell className="font-medium">{task.id}</TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className="uppercase text-[10px] font-normal text-muted-foreground"
-                        >
-                          {task.label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-medium truncate block">
-                          {task.title}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex w-[100px] items-center gap-2">
-                          {getStatusIcon(task.status)}
-                          <span className="capitalize text-muted-foreground">
-                            {task.status}
+                      {visibleColumns.has("id") && (
+                        <TableCell className="font-medium">{task.id}</TableCell>
+                      )}
+                      {visibleColumns.has("label") && (
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="uppercase text-[10px] font-normal text-muted-foreground"
+                          >
+                            {task.label}
+                          </Badge>
+                        </TableCell>
+                      )}
+                      {visibleColumns.has("title") && (
+                        <TableCell>
+                          <span className="font-medium truncate block">
+                            {task.title}
                           </span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          {task.priority === "high" && (
-                            <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
-                          )}
-                          {task.priority === "medium" && (
-                            <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
-                          )}
-                          {task.priority === "low" && (
-                            <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
-                          )}
-                          <span className="capitalize text-muted-foreground">
-                            {task.priority}
-                          </span>
-                        </div>
-                      </TableCell>
+                        </TableCell>
+                      )}
+                      {visibleColumns.has("status") && (
+                        <TableCell>
+                          <div className="flex w-[100px] items-center gap-2">
+                            {getStatusIcon(task.status)}
+                            <span className="capitalize text-muted-foreground">
+                              {task.status}
+                            </span>
+                          </div>
+                        </TableCell>
+                      )}
+                      {visibleColumns.has("priority") && (
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {task.priority === "high" && (
+                              <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
+                            )}
+                            {task.priority === "medium" && (
+                              <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                            )}
+                            {task.priority === "low" && (
+                              <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
+                            )}
+                            <span className="capitalize text-muted-foreground">
+                              {task.priority}
+                            </span>
+                          </div>
+                        </TableCell>
+                      )}
                       <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
