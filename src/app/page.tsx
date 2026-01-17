@@ -456,7 +456,7 @@ export default function TaskPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-3xl font-semibold tracking-tight">
               Task Management System
             </h1>
             {searchQuery ? (
@@ -777,8 +777,7 @@ export default function TaskPage() {
                       ),
                     {
                       loading: "Loading...",
-                      success: () =>
-                        `Task ${taskToDelete} has been trashed!`,
+                      success: () => `Task ${taskToDelete} has been trashed!`,
                       error: "Error",
                     },
                   );
