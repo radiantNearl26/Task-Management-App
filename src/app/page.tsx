@@ -503,6 +503,7 @@ export default function TaskPage() {
             </InputGroup>
 
             <Button
+              size="lg"
               variant={searchType === "status" ? "default" : "outline"}
               onClick={() =>
                 setSearchType(searchType === "status" ? "title" : "status")
@@ -512,6 +513,7 @@ export default function TaskPage() {
               Status
             </Button>
             <Button
+              size="lg"
               variant={searchType === "priority" ? "default" : "outline"}
               onClick={() =>
                 setSearchType(searchType === "priority" ? "title" : "priority")
@@ -521,6 +523,7 @@ export default function TaskPage() {
               Priority
             </Button>
             <Button
+              size="lg"
               variant="outline"
               onClick={() => {
                 setSearchQuery("");
@@ -528,14 +531,14 @@ export default function TaskPage() {
               }}
             >
               Reset
-              <Kbd className="ml-1">Esc</Kbd>
+              <Kbd className="ml-2">Esc</Kbd>
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto hidden lg:flex">
-                  <Settings2 className="mr-2 h-4 w-4" />
+                <Button variant="outline" className="" size="lg">
+                  <Settings2 className="" />
                   View
                 </Button>
               </DropdownMenuTrigger>
