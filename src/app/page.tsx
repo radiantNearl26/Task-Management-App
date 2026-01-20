@@ -454,7 +454,7 @@ export default function TaskPage() {
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex flex-col gap-8 p-8 max-w-[1400px] mx-auto w-full text-foreground">
         {/* Header */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl font-semibold tracking-tight">
               Task Management System
@@ -473,7 +473,7 @@ export default function TaskPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Avatar>
+            <Avatar className="h-12 w-12">
               <AvatarImage src="/avatar.png" alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
