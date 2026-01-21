@@ -75,6 +75,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { getTasks, createTask, deleteTask, type Task } from "./actions";
 
 type SearchType = "title" | "status" | "priority";
@@ -86,9 +87,14 @@ type SortConfig = {
 
 export default function TaskPage() {
   const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   React.useEffect(() => {
-    getTasks().then(setTasks);
+    setIsLoading(true);
+    getTasks().then((data) => {
+      setTasks(data);
+      setIsLoading(false);
+    });
   }, []);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [searchType, setSearchType] = React.useState<SearchType>("title");
@@ -446,121 +452,164 @@ export default function TaskPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedTasks.map((task) => (
-                <ContextMenu key={task.id}>
-                  <ContextMenuTrigger asChild>
-                    <TableRow
-                      data-state={
-                        selectedTaskIds.has(task.id) ? "selected" : undefined
-                      }
-                      className={
-                        task.status === "done" ? "opacity-50 bg-muted/40" : ""
-                      }
-                    >
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index} className="hover:bg-transparent">
                       <TableCell className="pl-4">
-                        <Checkbox
-                          checked={selectedTaskIds.has(task.id)}
-                          onCheckedChange={(checked) =>
-                            toggleTaskSelection(task.id, checked as boolean)
-                          }
-                        />
+                        <Skeleton className="h-4 w-4 rounded" />
                       </TableCell>
                       {visibleColumns.has("id") && (
-                        <TableCell className="font-medium">{task.id}</TableCell>
+                        <TableCell>
+                          <Skeleton className="h-4 w-[100px]" />
+                        </TableCell>
                       )}
                       {visibleColumns.has("label") && (
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className="uppercase text-[10px] font-normal text-muted-foreground"
-                          >
-                            {task.label}
-                          </Badge>
+                          <Skeleton className="h-5 w-[150px] rounded-full" />
                         </TableCell>
                       )}
                       {visibleColumns.has("title") && (
                         <TableCell>
-                          <span className="font-medium truncate block">
-                            {task.title}
-                          </span>
+                          <Skeleton className="h-4 w-[500px]" />
                         </TableCell>
                       )}
                       {visibleColumns.has("status") && (
                         <TableCell>
-                          <div className="flex w-[100px] items-center gap-2">
-                            {getStatusIcon(task.status)}
-                            <span className="capitalize text-muted-foreground">
-                              {task.status}
-                            </span>
+                          <div className="flex items-center gap-2">
+                            <Skeleton className="h-4 w-[150px]" />
                           </div>
                         </TableCell>
                       )}
                       {visibleColumns.has("priority") && (
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            {task.priority === "high" && (
-                              <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
-                            )}
-                            {task.priority === "medium" && (
-                              <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
-                            )}
-                            {task.priority === "low" && (
-                              <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
-                            )}
-                            <span className="capitalize text-muted-foreground">
-                              {task.priority}
-                            </span>
+                            <Skeleton className="h-4 w-[150px]" />
                           </div>
                         </TableCell>
                       )}
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Open menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="w-[160px]"
-                          >
-                            <DropdownMenuItem>Edit</DropdownMenuItem>
-                            <DropdownMenuItem>Make a copy</DropdownMenuItem>
-                            <DropdownMenuItem>Favorite</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setTaskToDelete(task.id);
-                                setDeleteDialogOpen(true);
-                              }}
-                            >
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
                     </TableRow>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className="w-[160px]">
-                    <ContextMenuItem>Edit</ContextMenuItem>
-                    <ContextMenuItem>Make a copy</ContextMenuItem>
-                    <ContextMenuItem>Favorite</ContextMenuItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuItem
-                      onClick={() => {
-                        setTaskToDelete(task.id);
-                        setDeleteDialogOpen(true);
-                      }}
-                    >
-                      Delete
-                    </ContextMenuItem>
-                  </ContextMenuContent>
-                </ContextMenu>
-              ))}
+                  ))
+                : paginatedTasks.map((task) => (
+                    <ContextMenu key={task.id}>
+                      <ContextMenuTrigger asChild>
+                        <TableRow
+                          data-state={
+                            selectedTaskIds.has(task.id)
+                              ? "selected"
+                              : undefined
+                          }
+                          className={
+                            task.status === "done"
+                              ? "opacity-50 bg-muted/40"
+                              : ""
+                          }
+                        >
+                          <TableCell className="pl-4">
+                            <Checkbox
+                              checked={selectedTaskIds.has(task.id)}
+                              onCheckedChange={(checked) =>
+                                toggleTaskSelection(task.id, checked as boolean)
+                              }
+                            />
+                          </TableCell>
+                          {visibleColumns.has("id") && (
+                            <TableCell className="font-medium">
+                              {task.id}
+                            </TableCell>
+                          )}
+                          {visibleColumns.has("label") && (
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className="uppercase text-[10px] font-normal text-muted-foreground"
+                              >
+                                {task.label}
+                              </Badge>
+                            </TableCell>
+                          )}
+                          {visibleColumns.has("title") && (
+                            <TableCell>
+                              <span className="font-medium truncate block">
+                                {task.title}
+                              </span>
+                            </TableCell>
+                          )}
+                          {visibleColumns.has("status") && (
+                            <TableCell>
+                              <div className="flex w-[100px] items-center gap-2">
+                                {getStatusIcon(task.status)}
+                                <span className="capitalize text-muted-foreground">
+                                  {task.status}
+                                </span>
+                              </div>
+                            </TableCell>
+                          )}
+                          {visibleColumns.has("priority") && (
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                {task.priority === "high" && (
+                                  <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
+                                )}
+                                {task.priority === "medium" && (
+                                  <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
+                                )}
+                                {task.priority === "low" && (
+                                  <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
+                                )}
+                                <span className="capitalize text-muted-foreground">
+                                  {task.priority}
+                                </span>
+                              </div>
+                            </TableCell>
+                          )}
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Open menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="end"
+                                className="w-[160px]"
+                              >
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>Make a copy</DropdownMenuItem>
+                                <DropdownMenuItem>Favorite</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setTaskToDelete(task.id);
+                                    setDeleteDialogOpen(true);
+                                  }}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent className="w-[160px]">
+                        <ContextMenuItem>Edit</ContextMenuItem>
+                        <ContextMenuItem>Make a copy</ContextMenuItem>
+                        <ContextMenuItem>Favorite</ContextMenuItem>
+                        <ContextMenuSeparator />
+                        <ContextMenuItem
+                          onClick={() => {
+                            setTaskToDelete(task.id);
+                            setDeleteDialogOpen(true);
+                          }}
+                        >
+                          Delete
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
+                  ))}
             </TableBody>
           </Table>
         </div>

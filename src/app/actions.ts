@@ -12,10 +12,6 @@ export type Task = {
   created_at?: Date;
 };
 
-// inside actions.ts
-const validPriorities = ["low", "medium", "high"];
-const priority = formData.get("priority") as string;
-
 export async function seedDatabase() {
   try {
     // Create table if it doesn't exist
