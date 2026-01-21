@@ -1,18 +1,32 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Features to be Implemented
+
+- [x] Implement delete functionality with alert dialog and toast
+- [x] Fix pagination to update with checkboxes
+- [x] Add sorting feature to table columns
+- [x] Implement a filtering system
+- [x] Implement database system using Vercel Postgress
+- [ ] Prepare standard project documentation in README
+- [ ] Autocomplete search query
+- [ ] Add sidebar
+- [ ] Add nav bar
+- [ ] Add 'add task' functionality with modal
+- [ ] add edit task functionality with modal
+- [ ] remove 'reset' btn
+- [ ] add profile functionality on avatar click
+- [ ] fix responsiveness on mobile
+- [ ] add task-status functionality - add @blocks/table actions column which will show actions for tasks
+- [x] fix checkbox to not alter status of tasks
+- [ ] revamp the filter system
+- [ ] copy the functionality of view btn to status and priority instead of going thru search box
+- [ ] add empty state when db is empty
+- [x] remove seed data locally and upload everything to cloud
+- [ ] fix button functionality to react with the cloud db
+
 ## Getting Started
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+First, run the development server: 'npm run dev'
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -28,9 +42,3 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
