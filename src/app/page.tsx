@@ -104,6 +104,9 @@ export default function TaskPage() {
   const [visibleColumns, setVisibleColumns] = React.useState<Set<string>>(
     new Set(["id", "label", "title", "status", "priority"]),
   );
+  const [selectedTaskIds, setSelectedTaskIds] = React.useState<Set<string>>(
+    new Set(),
+  );
 
   const columns = [
     { id: "id", label: "Serial" },
@@ -192,18 +195,13 @@ export default function TaskPage() {
     setCurrentPage(1);
   }, [searchQuery, searchType, sortConfig]);
 
-  const toggleTaskStatus = (taskId: string, isChecked: boolean) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            status: isChecked ? "done" : "in progress",
-          };
-        }
-        return task;
-      }),
-    );
+  const toggleTaskSelection = (taskId: string, isChecked: boolean) => {
+    setSelectedTaskIds((prev) => {
+      const next = new Set(prev);
+      if (isChecked) next.add(taskId);
+      else next.delete(taskId);
+      return next;
+    });
   };
 
   const handleSort = (key: keyof Task) => {
@@ -247,8 +245,9 @@ export default function TaskPage() {
   const endIndex = startIndex + pageSize;
   const paginatedTasks = filteredTasks.slice(startIndex, endIndex);
 
-  // Count selected (done) rows within the filtered set
-  const selectedCount = filteredTasks.filter((t) => t.status === "done").length;
+  const selectedCount = filteredTasks.filter((t) =>
+    selectedTaskIds.has(t.id),
+  ).length;
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
@@ -442,14 +441,17 @@ export default function TaskPage() {
                   <ContextMenuTrigger asChild>
                     <TableRow
                       data-state={
-                        task.status === "done" ? "selected" : undefined
+                        selectedTaskIds.has(task.id) ? "selected" : undefined
+                      }
+                      className={
+                        task.status === "done" ? "opacity-50 bg-muted/40" : ""
                       }
                     >
                       <TableCell className="pl-4">
                         <Checkbox
-                          checked={task.status === "done"}
+                          checked={selectedTaskIds.has(task.id)}
                           onCheckedChange={(checked) =>
-                            toggleTaskStatus(task.id, checked as boolean)
+                            toggleTaskSelection(task.id, checked as boolean)
                           }
                         />
                       </TableCell>
