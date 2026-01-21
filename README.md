@@ -13,7 +13,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - [ ] Add nav bar
 - [ ] Add 'add task' functionality with modal
 - [ ] add edit task functionality with modal
-- [ ] remove 'reset' btn
+- [x] remove 'reset' btn
 - [ ] add profile functionality on avatar click
 - [ ] fix responsiveness on mobile
 - [ ] add task-status functionality - add @blocks/table actions column which will show actions for tasks
@@ -23,6 +23,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - [ ] add empty state when db is empty
 - [x] remove seed data locally and upload everything to cloud
 - [ ] fix button functionality to react with the cloud db
+- [ ] set different icons for priority like the getStatusIcon function
 
 ## Getting Started
 

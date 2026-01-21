@@ -315,17 +315,6 @@ export default function TaskPage() {
               <OctagonAlert className="" />
               Priority
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => {
-                setSearchQuery("");
-                setSearchType("title");
-              }}
-            >
-              Reset
-              <Kbd className="ml-2">Esc</Kbd>
-            </Button>
           </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
