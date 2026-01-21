@@ -12,6 +12,10 @@ export type Task = {
   created_at?: Date;
 };
 
+// inside actions.ts
+const validPriorities = ["low", "medium", "high"];
+const priority = formData.get("priority") as string;
+
 export async function seedDatabase() {
   try {
     // Create table if it doesn't exist
@@ -53,6 +57,24 @@ export async function createTask(formData: FormData) {
   const status = formData.get("status") as string;
   const priority = formData.get("priority") as string;
   const label = formData.get("label") as string;
+
+  // Server-side Validation
+  const validPriorities = ["low", "medium", "high"];
+  const validStatuses = ["backlog", "todo", "in progress", "done", "canceled"];
+
+  if (!validPriorities.includes(priority)) {
+    return {
+      success: false,
+      message: "Error: Invalid priority value alloted to the task",
+    };
+  }
+
+  if (!validStatuses.includes(status)) {
+    return {
+      success: false,
+      message: "Error: Invalid status value alloted to the task",
+    };
+  }
 
   // Generate a simple ID like T-XXX.
   // For production, use UUID or let DB handle SERIAL ID.

@@ -224,16 +224,10 @@ export default function TaskPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "backlog":
-        return <HelpCircle className="h-3 w-3 text-muted-foreground" />;
-      case "todo":
-        return <Circle className="h-3 w-3 text-muted-foreground" />;
       case "in progress":
         return <Timer className="h-3 w-3 text-muted-foreground" />;
       case "done":
         return <CheckCircle2 className="h-3 w-3 text-muted-foreground" />;
-      case "canceled":
-        return <Circle className="h-3 w-3 text-muted-foreground opacity-50" />;
       default:
         return <Circle className="h-3 w-3 text-muted-foreground" />;
     }
@@ -362,7 +356,34 @@ export default function TaskPage() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button>
+            <Button
+              onClick={() => {
+                const title = window.prompt("Enter task title");
+                if (title) {
+                  const formData = new FormData();
+                  formData.append("title", title);
+                  formData.append("status", "todo");
+                  formData.append("priority", "medium");
+                  formData.append("label", "feature");
+
+                  toast.promise(
+                    async () => {
+                      // @ts-ignore - response type mismatch fix
+                      const result = await createTask(formData);
+                      if (result && !result.success) {
+                        throw new Error(result.message);
+                      }
+                      setTasks(await getTasks());
+                    },
+                    {
+                      loading: "Creating...",
+                      success: "Task created",
+                      error: (err) => err.message,
+                    },
+                  );
+                }
+              }}
+            >
               <PlusCircle className="" />
               Add Task
             </Button>
