@@ -258,7 +258,11 @@ export default function TaskPage() {
             <h1 className="text-3xl font-semibold tracking-tight">
               Task Management System
             </h1>
-            {searchQuery ? (
+            {isLoading ? (
+              <p className="text-muted-foreground">
+                Loading tasks from the database...
+              </p>
+            ) : searchQuery ? (
               <p className="text-muted-foreground">
                 {filteredTasks.length} results found for &quot;
                 {searchQuery}&quot; in {searchType}
@@ -453,37 +457,37 @@ export default function TaskPage() {
             </TableHeader>
             <TableBody>
               {isLoading
-                ? Array.from({ length: 5 }).map((_, index) => (
-                    <TableRow key={index} className="hover:bg-transparent">
+                ? Array.from({ length: 10 }).map((_, index) => (
+                    <TableRow key={index} className="hover:bg-transparent h-12">
                       <TableCell className="pl-4">
                         <Skeleton className="h-4 w-4 rounded" />
                       </TableCell>
                       {visibleColumns.has("id") && (
                         <TableCell>
-                          <Skeleton className="h-4 w-[100px]" />
+                          <Skeleton className="h-4 w-[70px]" />
                         </TableCell>
                       )}
                       {visibleColumns.has("label") && (
                         <TableCell>
-                          <Skeleton className="h-5 w-[150px] rounded-full" />
+                          <Skeleton className="h-4 w-[120px] rounded-full" />
                         </TableCell>
                       )}
                       {visibleColumns.has("title") && (
                         <TableCell>
-                          <Skeleton className="h-4 w-[500px]" />
+                          <Skeleton className="h-4 w-[600px]" />
                         </TableCell>
                       )}
                       {visibleColumns.has("status") && (
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <Skeleton className="h-4 w-[150px]" />
+                            <Skeleton className="h-4 w-[120px]" />
                           </div>
                         </TableCell>
                       )}
                       {visibleColumns.has("priority") && (
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <Skeleton className="h-4 w-[150px]" />
+                            <Skeleton className="h-4 w-[120px]" />
                           </div>
                         </TableCell>
                       )}
