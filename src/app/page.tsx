@@ -92,13 +92,13 @@ export default function TaskPage() {
 
   React.useEffect(() => {
     const messages = [
-      "Running command 'rm -rf /*' on server...",
-      "Downloading more RAM...",
-      "Decrypting the matrix...",
-      "Asking the server nicely...",
-      "Compiling coffee into code...",
-      "Deleting production database...",
-      "Generating tasks from thin air...",
+      "Running command 'rm -rf /*' on server ＾▽＾",
+      "Downloading more RAM ;3",
+      "Decrypting the matrix >_>",
+      "Asking the server nicely ^_^",
+      "Compiling ray-traced shaders =^.^=",
+      "Deleting production database :P",
+      "Rendering tasks from thin air ツ",
     ];
     setLoadingMessage(messages[Math.floor(Math.random() * messages.length)]);
 
