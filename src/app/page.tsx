@@ -78,7 +78,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { getTasks, createTask, deleteTask, type Task } from "./actions";
 
-type SearchType = "title" | "status" | "priority";
 type SortDirection = "asc" | "desc";
 type SortConfig = {
   key: keyof Task;
@@ -109,7 +108,7 @@ export default function TaskPage() {
     });
   }, []);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchType, setSearchType] = React.useState<SearchType>("title");
+  // const [searchType, setSearchType] = React.useState<SearchType>("title"); // functionality removed
   const [sortConfig, setSortConfig] = React.useState<SortConfig>({
     key: "id",
     direction: "asc",
@@ -124,6 +123,12 @@ export default function TaskPage() {
   );
   const [selectedTaskIds, setSelectedTaskIds] = React.useState<Set<string>>(
     new Set(),
+  );
+  const [statusFilters, setStatusFilters] = React.useState<Set<string>>(
+    new Set(["in progress", "done"]),
+  );
+  const [priorityFilters, setPriorityFilters] = React.useState<Set<string>>(
+    new Set(["low", "medium", "high"]),
   );
 
   const columns = [
@@ -156,7 +161,6 @@ export default function TaskPage() {
           setSearchQuery("");
         } else {
           setSearchQuery("");
-          setSearchType("title");
         }
       }
     };
@@ -170,18 +174,14 @@ export default function TaskPage() {
     let result = [...tasks];
 
     // Filter
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      result = result.filter((task) => {
-        if (searchType === "title")
-          return task.title.toLowerCase().includes(lowerQuery);
-        if (searchType === "status")
-          return task.status.toLowerCase().includes(lowerQuery);
-        if (searchType === "priority")
-          return task.priority.toLowerCase().includes(lowerQuery);
-        return false;
-      });
-    }
+    result = result.filter((task) => {
+      const matchesTitle = searchQuery
+        ? task.title.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+      const matchesStatus = statusFilters.has(task.status);
+      const matchesPriority = priorityFilters.has(task.priority);
+      return matchesTitle && matchesStatus && matchesPriority;
+    });
 
     // Sort
     const modifier = sortConfig.direction === "asc" ? 1 : -1;
@@ -206,12 +206,12 @@ export default function TaskPage() {
     });
 
     return result;
-  }, [tasks, searchQuery, searchType, sortConfig]);
+  }, [tasks, searchQuery, sortConfig, statusFilters, priorityFilters]);
 
   // Reset pagination when filters change
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, searchType, sortConfig]);
+  }, [searchQuery, sortConfig, statusFilters, priorityFilters]);
 
   const toggleTaskSelection = (taskId: string, isChecked: boolean) => {
     setSelectedTaskIds((prev) => {
@@ -275,7 +275,7 @@ export default function TaskPage() {
             ) : searchQuery ? (
               <p className="text-muted-foreground">
                 {filteredTasks.length} results found for &quot;
-                {searchQuery}&quot; in {searchType}
+                {searchQuery}&quot;
               </p>
             ) : (
               <p className="text-muted-foreground">
@@ -299,7 +299,7 @@ export default function TaskPage() {
             <InputGroup className="w-[250px] lg:w-[350px] group">
               <InputGroupInput
                 ref={searchInputRef}
-                placeholder={`Filter via ${searchType}...`}
+                placeholder="Search tasks"
                 className="pl-9 pr-10 hover:border-primary transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -315,26 +315,69 @@ export default function TaskPage() {
               </InputGroupAddon>
             </InputGroup>
 
-            <Button
-              size="lg"
-              variant={searchType === "status" ? "default" : "outline"}
-              onClick={() =>
-                setSearchType(searchType === "status" ? "title" : "status")
-              }
-            >
-              <CalendarClock className="" />
-              Status
-            </Button>
-            <Button
-              size="lg"
-              variant={searchType === "priority" ? "default" : "outline"}
-              onClick={() =>
-                setSearchType(searchType === "priority" ? "title" : "priority")
-              }
-            >
-              <OctagonAlert className="" />
-              Priority
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="lg"
+                  variant={statusFilters.size < 2 ? "default" : "outline"}
+                >
+                  <CalendarClock className="" />
+                  Status
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[150px]">
+                <DropdownMenuLabel>Filter Status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {["In Progress", "Done"].map((status) => (
+                  <DropdownMenuCheckboxItem
+                    key={status}
+                    checked={statusFilters.has(status.toLowerCase())}
+                    onCheckedChange={(checked) => {
+                      setStatusFilters((prev) => {
+                        const next = new Set(prev);
+                        if (checked) next.add(status.toLowerCase());
+                        else next.delete(status.toLowerCase());
+                        return next;
+                      });
+                    }}
+                  >
+                    {status}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="lg"
+                  variant={priorityFilters.size < 3 ? "default" : "outline"}
+                >
+                  <OctagonAlert className="" />
+                  Priority
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[150px]">
+                <DropdownMenuLabel>Filter Priority</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {["Low", "Medium", "High"].map((priority) => (
+                  <DropdownMenuCheckboxItem
+                    key={priority}
+                    checked={priorityFilters.has(priority.toLowerCase())}
+                    onCheckedChange={(checked) => {
+                      setPriorityFilters((prev) => {
+                        const next = new Set(prev);
+                        if (checked) next.add(priority.toLowerCase());
+                        else next.delete(priority.toLowerCase());
+                        return next;
+                      });
+                    }}
+                  >
+                    {priority}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -344,7 +387,7 @@ export default function TaskPage() {
                   View
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[150px]">
+              <DropdownMenuContent align="start" className="w-[150px]">
                 <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {columns.map((column) => (

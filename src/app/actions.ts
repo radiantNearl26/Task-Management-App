@@ -56,7 +56,7 @@ export async function createTask(formData: FormData) {
 
   // Server-side Validation
   const validPriorities = ["low", "medium", "high"];
-  const validStatuses = ["backlog", "todo", "in progress", "done", "canceled"];
+  const validStatuses = ["in progress", "done"];
 
   if (!validPriorities.includes(priority)) {
     return {
