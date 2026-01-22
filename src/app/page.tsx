@@ -22,6 +22,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 
+import { SpinnerCustom } from "@/components/ui/spinner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -271,7 +272,10 @@ export default function TaskPage() {
               Task Management System
             </h1>
             {isLoading ? (
-              <p className="text-muted-foreground">{loadingMessage}</p>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <SpinnerCustom />
+                <p>{loadingMessage}</p>
+              </div>
             ) : searchQuery ? (
               <p className="text-muted-foreground">
                 {filteredTasks.length} results found for &quot;
