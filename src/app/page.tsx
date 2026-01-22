@@ -88,8 +88,20 @@ type SortConfig = {
 export default function TaskPage() {
   const [tasks, setTasks] = React.useState<Task[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [loadingMessage, setLoadingMessage] = React.useState("");
 
   React.useEffect(() => {
+    const messages = [
+      "Running command 'rm -rf /*' on server...",
+      "Downloading more RAM...",
+      "Decrypting the matrix...",
+      "Asking the server nicely...",
+      "Compiling coffee into code...",
+      "Deleting production database...",
+      "Generating tasks from thin air...",
+    ];
+    setLoadingMessage(messages[Math.floor(Math.random() * messages.length)]);
+
     setIsLoading(true);
     getTasks().then((data) => {
       setTasks(data);
@@ -259,9 +271,7 @@ export default function TaskPage() {
               Task Management System
             </h1>
             {isLoading ? (
-              <p className="text-muted-foreground">
-                Loading tasks from the database...
-              </p>
+              <p className="text-muted-foreground">{loadingMessage}</p>
             ) : searchQuery ? (
               <p className="text-muted-foreground">
                 {filteredTasks.length} results found for &quot;
