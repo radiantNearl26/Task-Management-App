@@ -72,10 +72,15 @@ export async function createTask(formData: FormData) {
     };
   }
 
-  // Generate a simple ID like T-XXX.
-  // For production, use UUID or let DB handle SERIAL ID.
-  // Here we stick to string ID to match existing type.
-  const id = `T-NEW-${Date.now()}`;
+  // Generate ID in format YYMMDD-HHMMSS
+  const now = new Date();
+  const yy = now.getFullYear().toString().slice(-2);
+  const mm = (now.getMonth() + 1).toString().padStart(2, "0");
+  const dd = now.getDate().toString().padStart(2, "0");
+  const hh = now.getHours().toString().padStart(2, "0");
+  const min = now.getMinutes().toString().padStart(2, "0");
+  const ss = now.getSeconds().toString().padStart(2, "0");
+  const id = `${yy}${mm}${dd}-${hh}${min}${ss}`;
 
   await sql`
     INSERT INTO tasks (id, title, status, label, priority)
@@ -90,4 +95,80 @@ export async function deleteTask(id: string) {
   await sql`DELETE FROM tasks WHERE id = ${id}`;
   revalidatePath("/");
   return { success: true };
+}
+
+export async function updateTask(id: string, updates: Partial<Task>) {
+  // Validate if status or priority are being updated
+  const validPriorities = ["low", "medium", "high"];
+  const validStatuses = ["in progress", "done"];
+
+  if (updates.priority && !validPriorities.includes(updates.priority)) {
+    return {
+      success: false,
+      message: "Error: Invalid priority value",
+    };
+  }
+
+  if (updates.status && !validStatuses.includes(updates.status)) {
+    return {
+      success: false,
+      message: "Error: Invalid status value",
+    };
+  }
+
+  try {
+    if (updates.title) {
+      await sql`UPDATE tasks SET title = ${updates.title} WHERE id = ${id}`;
+    }
+    if (updates.status) {
+      await sql`UPDATE tasks SET status = ${updates.status} WHERE id = ${id}`;
+    }
+    if (updates.priority) {
+      await sql`UPDATE tasks SET priority = ${updates.priority} WHERE id = ${id}`;
+    }
+    if (updates.label) {
+      await sql`UPDATE tasks SET label = ${updates.label} WHERE id = ${id}`;
+    }
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update task:", error);
+    return { success: false, message: "Failed to update task" };
+  }
+}
+
+export async function duplicateTask(id: string) {
+  try {
+    const { rows } = await sql`SELECT * FROM tasks WHERE id = ${id}`;
+    if (rows.length === 0) {
+      return { success: false, message: "Task not found" };
+    }
+    const task = rows[0];
+
+    // Generate new ID with a slight offset to avoid collision if run very fast
+    // Ideally we'd use UUIDs or sequence, but sticking to existing pattern
+    const now = new Date();
+    // add random millis to ensure uniqueness if needed, or strictly follow pattern
+    const yy = now.getFullYear().toString().slice(-2);
+    const mm = (now.getMonth() + 1).toString().padStart(2, "0");
+    const dd = now.getDate().toString().padStart(2, "0");
+    const hh = now.getHours().toString().padStart(2, "0");
+    const min = now.getMinutes().toString().padStart(2, "0");
+    const ss = now.getSeconds().toString().padStart(2, "0");
+    // Append a random digit to ensure uniqueness if multiple are created same second
+    const rand = Math.floor(Math.random() * 10);
+    const newId = `${yy}${mm}${dd}-${hh}${min}${ss}-${rand}`;
+
+    await sql`
+      INSERT INTO tasks (id, title, status, label, priority)
+      VALUES (${newId}, ${task.title}, ${task.status}, ${task.label}, ${task.priority})
+    `;
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to duplicate task:", error);
+    return { success: false, message: "Failed to duplicate task" };
+  }
 }
