@@ -84,6 +84,17 @@ export async function deleteTask(id: string) {
   return { success: true };
 }
 
+export async function deleteTasks(ids: string[]) {
+  try {
+    await Promise.all(ids.map((id) => sql`DELETE FROM tasks WHERE id = ${id}`));
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete tasks:", error);
+    return { success: false };
+  }
+}
+
 export async function updateTask(id: string, updates: Partial<Task>) {
   try {
     if (updates.title) {

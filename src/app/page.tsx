@@ -20,6 +20,7 @@ import {
   ChevronsRight,
   OctagonAlert,
   CalendarClock,
+  Trash2,
 } from "lucide-react";
 
 import { SpinnerCustom } from "@/components/ui/spinner";
@@ -83,6 +84,7 @@ import {
   getTasks,
   createTask,
   deleteTask,
+  deleteTasks,
   updateTask,
   duplicateTask,
   type Task,
@@ -127,6 +129,7 @@ export default function TaskPage() {
   const [pageSize, setPageSize] = React.useState(10);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = React.useState(false);
   const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
   const [editingTask, setEditingTask] = React.useState<Task | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
@@ -414,6 +417,18 @@ export default function TaskPage() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {selectedTaskIds.size > 0 && (
+              <Button
+                size="lg"
+                variant="destructive"
+                onClick={() => setBulkDeleteDialogOpen(true)}
+                className="animate-in fade-in zoom-in duration-300"
+              >
+                <Trash2 className="" />
+                Delete ({selectedTaskIds.size})
+              </Button>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -457,9 +472,7 @@ export default function TaskPage() {
           <Table className="table-fixed">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[50px] pl-4">
-                  <Checkbox />
-                </TableHead>
+                <TableHead className="w-[50px] pl-4"></TableHead>
                 {visibleColumns.has("id") && (
                   <TableHead
                     className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
@@ -766,6 +779,49 @@ export default function TaskPage() {
             </TableBody>
           </Table>
         </div>
+        <AlertDialog
+          open={bulkDeleteDialogOpen}
+          onOpenChange={setBulkDeleteDialogOpen}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Delete {selectedTaskIds.size} task
+                {selectedTaskIds.size === 1 ? "" : "s"}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the
+                selected tasks from the database.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setBulkDeleteDialogOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async () => {
+                  const idsToDelete = Array.from(selectedTaskIds);
+                  setBulkDeleteDialogOpen(false);
+                  toast.promise(
+                    async () => {
+                      await deleteTasks(idsToDelete);
+                      setTasks(await getTasks());
+                      setSelectedTaskIds(new Set());
+                    },
+                    {
+                      loading: "Deleting tasks...",
+                      success: `Deleted ${idsToDelete.length} tasks`,
+                      error: "Failed to delete tasks",
+                    },
+                  );
+                }}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                Delete Selected
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
           <AlertDialogContent>
