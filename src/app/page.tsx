@@ -24,6 +24,7 @@ import {
 
 import { SpinnerCustom } from "@/components/ui/spinner";
 import Dialog11 from "@/components/dialog-11";
+import { GitHubProfileCard } from "@/components/elements/github-profile-card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -262,6 +263,19 @@ export default function TaskPage() {
     }
   };
 
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return <ArrowUp className="h-3 w-3 text-muted-foreground" />;
+      case "medium":
+        return <ArrowUpDown className="h-3 w-3 text-muted-foreground" />;
+      case "low":
+        return <ArrowDown className="h-3 w-3 text-muted-foreground" />;
+      default:
+        return <Circle className="h-3 w-3 text-muted-foreground" />;
+    }
+  };
+
   // Pagination Logic
   const totalPages = Math.ceil(filteredTasks.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -300,10 +314,18 @@ export default function TaskPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src="/avatar.png" alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
+            <div className="relative group">
+              <Avatar className="h-12 w-12 cursor-pointer">
+                <AvatarImage src="/avatar.png" alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+              <div className="absolute top-12 right-0 pt-2 hidden group-hover:block z-50 w-80">
+                <GitHubProfileCard
+                  username="radiantNearl26"
+                  className="shadow-md bg-popover text-popover-foreground"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -592,15 +614,7 @@ export default function TaskPage() {
                           {visibleColumns.has("priority") && (
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                {task.priority === "high" && (
-                                  <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180" />
-                                )}
-                                {task.priority === "medium" && (
-                                  <ArrowUpDown className="h-3 w-3 text-muted-foreground" />
-                                )}
-                                {task.priority === "low" && (
-                                  <ArrowUpDown className="h-3 w-3 text-muted-foreground rotate-180 opacity-50" />
-                                )}
+                                {getPriorityIcon(task.priority)}
                                 <span className="capitalize text-muted-foreground">
                                   {task.priority}
                                 </span>
@@ -654,13 +668,23 @@ export default function TaskPage() {
                                   onClick={async () => {
                                     toast.promise(
                                       async () => {
-                                        await duplicateTask(task.id);
+                                        const result = await duplicateTask(
+                                          task.id,
+                                        );
+                                        if (!result.success) {
+                                          throw new Error(
+                                            result.message ||
+                                              "Failed to duplicate task",
+                                          );
+                                        }
                                         setTasks(await getTasks());
                                       },
                                       {
                                         loading: "Duplicating task...",
                                         success: "Task duplicated",
-                                        error: "Failed to duplicate task",
+                                        error: (err) =>
+                                          err.message ||
+                                          "Failed to duplicate task",
                                       },
                                     );
                                   }}
