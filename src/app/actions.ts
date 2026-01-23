@@ -54,24 +54,6 @@ export async function createTask(formData: FormData) {
   const priority = formData.get("priority") as string;
   const label = formData.get("label") as string;
 
-  // Server-side Validation
-  const validPriorities = ["low", "medium", "high"];
-  const validStatuses = ["in progress", "done"];
-
-  if (!validPriorities.includes(priority)) {
-    return {
-      success: false,
-      message: "Error: Invalid priority value alloted to the task",
-    };
-  }
-
-  if (!validStatuses.includes(status)) {
-    return {
-      success: false,
-      message: "Error: Invalid status value alloted to the task",
-    };
-  }
-
   // Generate ID in format YYMMDD-HHMMSS
   const now = new Date();
   const yy = now.getFullYear().toString().slice(-2);
@@ -98,24 +80,6 @@ export async function deleteTask(id: string) {
 }
 
 export async function updateTask(id: string, updates: Partial<Task>) {
-  // Validate if status or priority are being updated
-  const validPriorities = ["low", "medium", "high"];
-  const validStatuses = ["in progress", "done"];
-
-  if (updates.priority && !validPriorities.includes(updates.priority)) {
-    return {
-      success: false,
-      message: "Error: Invalid priority value",
-    };
-  }
-
-  if (updates.status && !validStatuses.includes(updates.status)) {
-    return {
-      success: false,
-      message: "Error: Invalid status value",
-    };
-  }
-
   try {
     if (updates.title) {
       await sql`UPDATE tasks SET title = ${updates.title} WHERE id = ${id}`;
