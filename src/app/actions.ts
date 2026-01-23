@@ -49,28 +49,33 @@ export async function getTasks() {
 }
 
 export async function createTask(formData: FormData) {
-  const title = formData.get("title") as string;
-  const status = formData.get("status") as string;
-  const priority = formData.get("priority") as string;
-  const label = formData.get("label") as string;
+  try {
+    const title = formData.get("title") as string;
+    const status = formData.get("status") as string;
+    const priority = formData.get("priority") as string;
+    const label = formData.get("label") as string;
 
-  // Generate ID in format YYMMDD-HHMMSS
-  const now = new Date();
-  const yy = now.getFullYear().toString().slice(-2);
-  const mm = (now.getMonth() + 1).toString().padStart(2, "0");
-  const dd = now.getDate().toString().padStart(2, "0");
-  const hh = now.getHours().toString().padStart(2, "0");
-  const min = now.getMinutes().toString().padStart(2, "0");
-  const ss = now.getSeconds().toString().padStart(2, "0");
-  const id = `${yy}${mm}${dd}-${hh}${min}${ss}`;
+    // Generate ID in format YYMMDD-HHMMSS
+    const now = new Date();
+    const yy = now.getFullYear().toString().slice(-2);
+    const mm = (now.getMonth() + 1).toString().padStart(2, "0");
+    const dd = now.getDate().toString().padStart(2, "0");
+    const hh = now.getHours().toString().padStart(2, "0");
+    const min = now.getMinutes().toString().padStart(2, "0");
+    const ss = now.getSeconds().toString().padStart(2, "0");
+    const id = `${yy}${mm}${dd}-${hh}${min}${ss}`;
 
-  await sql`
-    INSERT INTO tasks (id, title, status, label, priority)
-    VALUES (${id}, ${title}, ${status}, ${label}, ${priority})
-  `;
+    await sql`
+      INSERT INTO tasks (id, title, status, label, priority)
+      VALUES (${id}, ${title}, ${status}, ${label}, ${priority})
+    `;
 
-  revalidatePath("/");
-  return { success: true };
+    revalidatePath("/");
+    return { success: true, message: "Task created successfully" };
+  } catch (error) {
+    console.error("Failed to create task:", error);
+    return { success: false, message: "Failed to create task" };
+  }
 }
 
 export async function deleteTask(id: string) {
