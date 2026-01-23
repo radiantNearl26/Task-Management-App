@@ -8,22 +8,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 - [x] Implement a filtering system
 - [x] Implement database system using Vercel Postgress
 - [ ] Prepare standard project documentation in README
-- [ ] Autocomplete search query
-- [ ] Add sidebar
-- [ ] Add nav bar
-- [ ] Add 'add task' functionality with modal
-- [ ] add edit task functionality with modal
+- [x] Add 'add task' functionality with modal
+- [x] add edit task functionality with modal
 - [x] remove 'reset' btn
-- [ ] add profile functionality on avatar click
+- [x] add profile functionality on avatar click
 - [ ] fix responsiveness on mobile
-- [ ] add task-status functionality - add @blocks/table actions column which will show actions for tasks
+- [x] add task-status functionality - add @blocks/table actions column which will show actions for tasks
 - [x] fix checkbox to not alter status of tasks
-- [ ] revamp the filter system
-- [ ] copy the functionality of view btn to status and priority instead of going thru search box
-- [ ] add empty state when db is empty
+- [x] revamp the filter system
+- [x] copy the functionality of view btn to status and priority instead of going thru search box
+- [x] add empty state when db is empty
 - [x] remove seed data locally and upload everything to cloud
-- [ ] fix button functionality to react with the cloud db
-- [ ] set different icons for priority like the getStatusIcon function
+- [x] set different icons for priority like the getStatusIcon function
 
 ## Getting Started
 
