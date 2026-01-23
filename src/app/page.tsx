@@ -9,11 +9,8 @@ import {
   ArrowDown,
   CheckCircle2,
   Circle,
-  HelpCircle,
   Timer,
-  PlusCircle,
   Settings2,
-  X,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -71,18 +68,10 @@ import {
 } from "@/components/ui/input-group";
 import { Kbd } from "@/components/ui/kbd";
 import { toast } from "sonner";
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   getTasks,
-  createTask,
   deleteTask,
   deleteTasks,
   updateTask,
@@ -570,211 +559,144 @@ export default function TaskPage() {
                     </TableRow>
                   ))
                 : paginatedTasks.map((task) => (
-                    <ContextMenu key={task.id}>
-                      <ContextMenuTrigger asChild>
-                        <TableRow
-                          data-state={
-                            selectedTaskIds.has(task.id)
-                              ? "selected"
-                              : undefined
+                    <TableRow
+                      key={task.id}
+                      data-state={
+                        selectedTaskIds.has(task.id) ? "selected" : undefined
+                      }
+                      className={
+                        task.status === "done" ? "opacity-50 bg-muted/40" : ""
+                      }
+                    >
+                      <TableCell className="pl-4">
+                        <Checkbox
+                          checked={selectedTaskIds.has(task.id)}
+                          onCheckedChange={(checked) =>
+                            toggleTaskSelection(task.id, checked as boolean)
                           }
-                          className={
-                            task.status === "done"
-                              ? "opacity-50 bg-muted/40"
-                              : ""
-                          }
-                        >
-                          <TableCell className="pl-4">
-                            <Checkbox
-                              checked={selectedTaskIds.has(task.id)}
-                              onCheckedChange={(checked) =>
-                                toggleTaskSelection(task.id, checked as boolean)
-                              }
-                            />
-                          </TableCell>
-                          {visibleColumns.has("id") && (
-                            <TableCell className="font-medium">
-                              {task.id}
-                            </TableCell>
-                          )}
-                          {visibleColumns.has("label") && (
-                            <TableCell>
-                              <Badge
-                                variant="outline"
-                                className="uppercase text-[10px] font-normal text-muted-foreground"
-                              >
-                                {task.label}
-                              </Badge>
-                            </TableCell>
-                          )}
-                          {visibleColumns.has("title") && (
-                            <TableCell>
-                              <span className="font-medium truncate block">
-                                {task.title}
-                              </span>
-                            </TableCell>
-                          )}
-                          {visibleColumns.has("status") && (
-                            <TableCell>
-                              <div className="flex w-[100px] items-center gap-2">
-                                {getStatusIcon(task.status)}
-                                <span className="capitalize text-muted-foreground">
-                                  {task.status}
-                                </span>
-                              </div>
-                            </TableCell>
-                          )}
-                          {visibleColumns.has("priority") && (
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                {getPriorityIcon(task.priority)}
-                                <span className="capitalize text-muted-foreground">
-                                  {task.priority}
-                                </span>
-                              </div>
-                            </TableCell>
-                          )}
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">Open menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent
-                                align="end"
-                                className="w-[160px]"
-                              >
-                                <DropdownMenuItem
-                                  className="text-green-600"
-                                  onClick={async () => {
-                                    toast.promise(
-                                      async () => {
-                                        await updateTask(task.id, {
-                                          status: "done",
-                                        });
-                                        setTasks(await getTasks());
-                                      },
-                                      {
-                                        loading: "Updating task...",
-                                        success: "Task marked as done",
-                                        error: "Failed to update task",
-                                      },
-                                    );
-                                  }}
-                                >
-                                  Mark as done
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => {
-                                    setEditingTask(task);
-                                    setIsEditDialogOpen(true);
-                                  }}
-                                >
-                                  Edit task
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={async () => {
-                                    toast.promise(
-                                      async () => {
-                                        const result = await duplicateTask(
-                                          task.id,
-                                        );
-                                        if (!result.success) {
-                                          throw new Error(
-                                            result.message ||
-                                              "Failed to duplicate task",
-                                          );
-                                        }
-                                        setTasks(await getTasks());
-                                      },
-                                      {
-                                        loading: "Duplicating task...",
-                                        success: "Task duplicated",
-                                        error: (err) =>
-                                          err.message ||
+                        />
+                      </TableCell>
+                      {visibleColumns.has("id") && (
+                        <TableCell className="font-medium">{task.id}</TableCell>
+                      )}
+                      {visibleColumns.has("label") && (
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className="uppercase text-[10px] font-normal text-muted-foreground"
+                          >
+                            {task.label}
+                          </Badge>
+                        </TableCell>
+                      )}
+                      {visibleColumns.has("title") && (
+                        <TableCell>
+                          <span className="font-medium truncate block">
+                            {task.title}
+                          </span>
+                        </TableCell>
+                      )}
+                      {visibleColumns.has("status") && (
+                        <TableCell>
+                          <div className="flex w-[100px] items-center gap-2">
+                            {getStatusIcon(task.status)}
+                            <span className="capitalize text-muted-foreground">
+                              {task.status}
+                            </span>
+                          </div>
+                        </TableCell>
+                      )}
+                      {visibleColumns.has("priority") && (
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            {getPriorityIcon(task.priority)}
+                            <span className="capitalize text-muted-foreground">
+                              {task.priority}
+                            </span>
+                          </div>
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                              <span className="sr-only">Open menu</span>
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="w-[160px]"
+                          >
+                            <DropdownMenuItem
+                              className="text-green-600"
+                              onClick={async () => {
+                                toast.promise(
+                                  async () => {
+                                    await updateTask(task.id, {
+                                      status: "done",
+                                    });
+                                    setTasks(await getTasks());
+                                  },
+                                  {
+                                    loading: "Updating task...",
+                                    success: "Task marked as done",
+                                    error: "Failed to update task",
+                                  },
+                                );
+                              }}
+                            >
+                              Mark as done
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setEditingTask(task);
+                                setIsEditDialogOpen(true);
+                              }}
+                            >
+                              Edit task
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={async () => {
+                                toast.promise(
+                                  async () => {
+                                    const result = await duplicateTask(task.id);
+                                    if (!result.success) {
+                                      throw new Error(
+                                        result.message ||
                                           "Failed to duplicate task",
-                                      },
-                                    );
-                                  }}
-                                >
-                                  Duplicate task
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-red-600"
-                                  onClick={() => {
-                                    setTaskToDelete(task.id);
-                                    setDeleteDialogOpen(true);
-                                  }}
-                                >
-                                  Delete task
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      </ContextMenuTrigger>
-                      <ContextMenuContent className="w-[160px]">
-                        <ContextMenuItem
-                          className="text-green-600"
-                          onClick={async () => {
-                            toast.promise(
-                              async () => {
-                                await updateTask(task.id, { status: "done" });
-                                setTasks(await getTasks());
-                              },
-                              {
-                                loading: "Updating task...",
-                                success: "Task marked as done",
-                                error: "Failed to update task",
-                              },
-                            );
-                          }}
-                        >
-                          Mark as done
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                          onClick={() => {
-                            setEditingTask(task);
-                            setIsEditDialogOpen(true);
-                          }}
-                        >
-                          Edit task
-                        </ContextMenuItem>
-                        <ContextMenuItem
-                          onClick={async () => {
-                            toast.promise(
-                              async () => {
-                                await duplicateTask(task.id);
-                                setTasks(await getTasks());
-                              },
-                              {
-                                loading: "Duplicating task...",
-                                success: "Task duplicated",
-                                error: "Failed to duplicate task",
-                              },
-                            );
-                          }}
-                        >
-                          Duplicate task
-                        </ContextMenuItem>
-                        <ContextMenuSeparator />
-                        <ContextMenuItem
-                          className="text-red-600"
-                          onClick={() => {
-                            setTaskToDelete(task.id);
-                            setDeleteDialogOpen(true);
-                          }}
-                        >
-                          Delete task
-                        </ContextMenuItem>
-                      </ContextMenuContent>
-                    </ContextMenu>
+                                      );
+                                    }
+                                    setTasks(await getTasks());
+                                  },
+                                  {
+                                    loading: "Duplicating task...",
+                                    success: "Task duplicated",
+                                    error: (err) =>
+                                      err.message || "Failed to duplicate task",
+                                  },
+                                );
+                              }}
+                            >
+                              Duplicate task
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-red-600"
+                              onClick={() => {
+                                setTaskToDelete(task.id);
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              Delete task
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
                   ))}
             </TableBody>
           </Table>
