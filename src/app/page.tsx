@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { SpinnerCustom } from "@/components/ui/spinner";
+import Dialog11 from "@/components/dialog-11";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,7 +78,14 @@ import {
 } from "@/components/ui/context-menu";
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTasks, createTask, deleteTask, type Task } from "./actions";
+import {
+  getTasks,
+  createTask,
+  deleteTask,
+  updateTask,
+  duplicateTask,
+  type Task,
+} from "./actions";
 
 type SortDirection = "asc" | "desc";
 type SortConfig = {
@@ -112,13 +120,15 @@ export default function TaskPage() {
   // const [searchType, setSearchType] = React.useState<SearchType>("title"); // functionality removed
   const [sortConfig, setSortConfig] = React.useState<SortConfig>({
     key: "id",
-    direction: "asc",
+    direction: "desc",
   });
   const [currentPage, setCurrentPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(10);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [taskToDelete, setTaskToDelete] = React.useState<string | null>(null);
+  const [editingTask, setEditingTask] = React.useState<Task | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [visibleColumns, setVisibleColumns] = React.useState<Set<string>>(
     new Set(["id", "label", "title", "status", "priority"]),
   );
@@ -300,11 +310,11 @@ export default function TaskPage() {
         {/* Toolbar */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 flex-1">
-            <InputGroup className="w-[250px] lg:w-[350px] group">
+            <InputGroup className="w-[200px] lg:w-[300px] group">
               <InputGroupInput
                 ref={searchInputRef}
                 placeholder="Search tasks"
-                className="pl-9 pr-10 hover:border-primary transition-colors"
+                className="h-10 pl-9 pr-10 hover:border-ring focus-visible:border-2 focus-visible:border-black transition-colors"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -412,37 +422,11 @@ export default function TaskPage() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button
-              onClick={() => {
-                const title = window.prompt("Enter task title");
-                if (title) {
-                  const formData = new FormData();
-                  formData.append("title", title);
-                  formData.append("status", "todo");
-                  formData.append("priority", "medium");
-                  formData.append("label", "feature");
-
-                  toast.promise(
-                    async () => {
-                      // @ts-ignore - response type mismatch fix
-                      const result = await createTask(formData);
-                      if (result && !result.success) {
-                        throw new Error(result.message);
-                      }
-                      setTasks(await getTasks());
-                    },
-                    {
-                      loading: "Creating...",
-                      success: "Task created",
-                      error: (err) => err.message,
-                    },
-                  );
-                }
+            <Dialog11
+              onTaskSaved={async () => {
+                setTasks(await getTasks());
               }}
-            >
-              <PlusCircle className="" />
-              Add Task
-            </Button>
+            />
           </div>
         </div>
 
@@ -456,7 +440,7 @@ export default function TaskPage() {
                 </TableHead>
                 {visibleColumns.has("id") && (
                   <TableHead
-                    className="w-[100px] cursor-pointer hover:text-foreground transition-colors"
+                    className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
                     onClick={() => handleSort("id")}
                   >
                     <div className="flex items-center">
@@ -521,7 +505,7 @@ export default function TaskPage() {
                       </TableCell>
                       {visibleColumns.has("id") && (
                         <TableCell>
-                          <Skeleton className="h-4 w-[70px]" />
+                          <Skeleton className="h-4 w-[120px]" />
                         </TableCell>
                       )}
                       {visibleColumns.has("label") && (
@@ -531,7 +515,7 @@ export default function TaskPage() {
                       )}
                       {visibleColumns.has("title") && (
                         <TableCell>
-                          <Skeleton className="h-4 w-[600px]" />
+                          <Skeleton className="h-4 w-[550px]" />
                         </TableCell>
                       )}
                       {visibleColumns.has("status") && (
@@ -638,17 +622,60 @@ export default function TaskPage() {
                                 align="end"
                                 className="w-[160px]"
                               >
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>Make a copy</DropdownMenuItem>
-                                <DropdownMenuItem>Favorite</DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-green-600"
+                                  onClick={async () => {
+                                    toast.promise(
+                                      async () => {
+                                        await updateTask(task.id, {
+                                          status: "done",
+                                        });
+                                        setTasks(await getTasks());
+                                      },
+                                      {
+                                        loading: "Updating task...",
+                                        success: "Task marked as done",
+                                        error: "Failed to update task",
+                                      },
+                                    );
+                                  }}
+                                >
+                                  Mark as done
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setEditingTask(task);
+                                    setIsEditDialogOpen(true);
+                                  }}
+                                >
+                                  Edit task
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={async () => {
+                                    toast.promise(
+                                      async () => {
+                                        await duplicateTask(task.id);
+                                        setTasks(await getTasks());
+                                      },
+                                      {
+                                        loading: "Duplicating task...",
+                                        success: "Task duplicated",
+                                        error: "Failed to duplicate task",
+                                      },
+                                    );
+                                  }}
+                                >
+                                  Duplicate task
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
+                                  className="text-red-600"
                                   onClick={() => {
                                     setTaskToDelete(task.id);
                                     setDeleteDialogOpen(true);
                                   }}
                                 >
-                                  Delete
+                                  Delete task
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -656,17 +683,58 @@ export default function TaskPage() {
                         </TableRow>
                       </ContextMenuTrigger>
                       <ContextMenuContent className="w-[160px]">
-                        <ContextMenuItem>Edit</ContextMenuItem>
-                        <ContextMenuItem>Make a copy</ContextMenuItem>
-                        <ContextMenuItem>Favorite</ContextMenuItem>
+                        <ContextMenuItem
+                          className="text-green-600"
+                          onClick={async () => {
+                            toast.promise(
+                              async () => {
+                                await updateTask(task.id, { status: "done" });
+                                setTasks(await getTasks());
+                              },
+                              {
+                                loading: "Updating task...",
+                                success: "Task marked as done",
+                                error: "Failed to update task",
+                              },
+                            );
+                          }}
+                        >
+                          Mark as done
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                          onClick={() => {
+                            setEditingTask(task);
+                            setIsEditDialogOpen(true);
+                          }}
+                        >
+                          Edit task
+                        </ContextMenuItem>
+                        <ContextMenuItem
+                          onClick={async () => {
+                            toast.promise(
+                              async () => {
+                                await duplicateTask(task.id);
+                                setTasks(await getTasks());
+                              },
+                              {
+                                loading: "Duplicating task...",
+                                success: "Task duplicated",
+                                error: "Failed to duplicate task",
+                              },
+                            );
+                          }}
+                        >
+                          Duplicate task
+                        </ContextMenuItem>
                         <ContextMenuSeparator />
                         <ContextMenuItem
+                          className="text-red-600"
                           onClick={() => {
                             setTaskToDelete(task.id);
                             setDeleteDialogOpen(true);
                           }}
                         >
-                          Delete
+                          Delete task
                         </ContextMenuItem>
                       </ContextMenuContent>
                     </ContextMenu>
@@ -680,8 +748,8 @@ export default function TaskPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will only move your task from the records to the trash bin.
-                Clear the trash if you wish to delete it permanently.
+                This action cannot be undone. This will permanently delete this
+                task from the database.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -702,20 +770,37 @@ export default function TaskPage() {
                         setTasks(await getTasks());
                       },
                       {
-                        loading: "Deleting...",
+                        loading: "Deleting selected task...",
                         success: `Task '${taskToDelete}' has been deleted`,
-                        error: "Failed to delete task",
+                        error: "Error: Failed to delete task!",
                       },
                     );
                   }
                   setDeleteDialogOpen(false);
                 }}
+                className="bg-red-600 text-white hover:bg-red-700"
+                /* red looks better for a destructive action */
               >
                 Continue
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <Dialog11
+          open={isEditDialogOpen}
+          onOpenChange={(open) => {
+            setIsEditDialogOpen(open);
+            if (!open) setEditingTask(null);
+          }}
+          taskToEdit={editingTask}
+          onTaskSaved={async () => {
+            setTasks(await getTasks());
+            setIsEditDialogOpen(false);
+            setEditingTask(null);
+          }}
+          showTrigger={false}
+        />
 
         {/* Pagination */}
         <div className="flex items-center justify-between px-2">
@@ -736,7 +821,7 @@ export default function TaskPage() {
                   <SelectValue placeholder={pageSize} />
                 </SelectTrigger>
                 <SelectContent side="top" position="popper" align="start">
-                  {[10, 25, 50, 100].map((pageSize) => (
+                  {[5, 10, 25, 50].map((pageSize) => (
                     <SelectItem key={pageSize} value={`${pageSize}`}>
                       {pageSize}
                     </SelectItem>
