@@ -120,9 +120,7 @@ export async function duplicateTask(id: string) {
     const hh = now.getHours().toString().padStart(2, "0");
     const min = now.getMinutes().toString().padStart(2, "0");
     const ss = now.getSeconds().toString().padStart(2, "0");
-    // Append a random digit to ensure uniqueness if multiple are created same second
-    const rand = Math.floor(Math.random() * 10);
-    const newId = `${yy}${mm}${dd}-${hh}${min}${ss}-${rand}`;
+    const newId = `${yy}${mm}${dd}-${hh}${min}${ss}`;
 
     await sql`
       INSERT INTO tasks (id, title, status, label, priority)
