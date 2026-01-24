@@ -306,24 +306,31 @@ export default function TaskPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative group">
-              <Avatar className="h-12 w-12 cursor-pointer">
-                <AvatarImage src="/avatar.png" alt="@shadcn" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-              <div className="absolute top-12 right-0 pt-2 hidden group-hover:block z-50 w-80">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="relative group p-0 bg-transparent hover:bg-transparent">
+                  <Avatar className="h-12 w-12 cursor-pointer">
+                    <AvatarImage src="/avatar.png" alt="@shadcn" />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-80 p-0 border-none bg-transparent shadow-none"
+              >
                 <GitHubProfileCard
                   username="radiantNearl26"
                   className="shadow-md bg-popover text-popover-foreground"
                 />
-              </div>
-            </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 flex-1">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2 flex-1 w-full md:w-auto">
             <InputGroup className="w-[200px] lg:w-[300px] group">
               <InputGroupInput
                 ref={searchInputRef}
@@ -350,7 +357,7 @@ export default function TaskPage() {
                   variant={statusFilters.size < 2 ? "default" : "outline"}
                 >
                   <CalendarClock className="" />
-                  Status
+                  <span className="hidden md:inline">Status</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[150px]">
@@ -382,7 +389,7 @@ export default function TaskPage() {
                   variant={priorityFilters.size < 3 ? "default" : "outline"}
                 >
                   <OctagonAlert className="" />
-                  Priority
+                  <span className="hidden md:inline">Priority</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[150px]">
@@ -415,16 +422,21 @@ export default function TaskPage() {
                 className="animate-in fade-in zoom-in duration-300"
               >
                 <Trash2 className="" />
-                Delete ({selectedTaskIds.size})
+                <span className="hidden md:inline">
+                  Delete ({selectedTaskIds.size})
+                </span>
+                <span className="inline md:hidden">
+                  ({selectedTaskIds.size})
+                </span>
               </Button>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-start md:justify-end w-full md:w-auto gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="" size="lg">
                   <Settings2 className="" />
-                  View
+                  <span className="hidden md:inline">View</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-[150px]">
@@ -486,7 +498,7 @@ export default function TaskPage() {
                 )}
                 {visibleColumns.has("title") && (
                   <TableHead
-                    className="cursor-pointer hover:text-foreground transition-colors"
+                    className="w-[580px] cursor-pointer hover:text-foreground transition-colors"
                     onClick={() => handleSort("title")}
                   >
                     <div className="flex items-center">
@@ -508,7 +520,7 @@ export default function TaskPage() {
                 )}
                 {visibleColumns.has("priority") && (
                   <TableHead
-                    className="w-[150px] cursor-pointer hover:text-foreground transition-colors"
+                    className="w-[130px] cursor-pointer hover:text-foreground transition-colors"
                     onClick={() => handleSort("priority")}
                   >
                     <div className="flex items-center">
@@ -805,11 +817,11 @@ export default function TaskPage() {
         />
 
         {/* Pagination */}
-        <div className="flex items-center justify-between px-2">
-          <div className="flex-1 text-muted-foreground">
+        <div className="flex flex-col md:flex-row items-center justify-between px-2 gap-4 md:gap-0">
+          <div className="flex-1 text-muted-foreground w-full text-center md:text-left">
             {selectedCount} of {filteredTasks.length} row(s) selected.
           </div>
-          <div className="flex items-center space-x-6 lg:space-x-8">
+          <div className="flex flex-col md:flex-row items-end md:items-center space-y-4 md:space-y-0 space-x-0 md:space-x-6 lg:space-x-8 w-full md:w-auto">
             <div className="flex items-center space-x-2">
               <p className="font-medium">Rows per page</p>
               <Select
@@ -831,48 +843,52 @@ export default function TaskPage() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex w-[100px] items-center justify-center font-medium">
-              Page {currentPage} of {totalPages || 1}
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => setCurrentPage(1)}
-                disabled={currentPage === 1}
-              >
-                <span className="sr-only">Go to first page</span>
-                <ChevronsLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0"
-                onClick={() => setCurrentPage((curr) => Math.max(1, curr - 1))}
-                disabled={currentPage === 1}
-              >
-                <span className="sr-only">Go to previous page</span>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="h-8 w-8 p-0"
-                onClick={() =>
-                  setCurrentPage((curr) => Math.min(totalPages, curr + 1))
-                }
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                <span className="sr-only">Go to next page</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="hidden h-8 w-8 p-0 lg:flex"
-                onClick={() => setCurrentPage(totalPages)}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                <span className="sr-only">Go to last page</span>
-                <ChevronsRight className="h-4 w-4" />
-              </Button>
+            <div className="flex w-full md:w-auto items-center justify-between md:justify-end gap-4 md:gap-6 lg:gap-8">
+              <div className="flex w-[100px] items-center justify-center font-medium">
+                Page {currentPage} of {totalPages || 1}
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  className="hidden h-8 w-8 p-0 lg:flex"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  <span className="sr-only">Go to first page</span>
+                  <ChevronsLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() =>
+                    setCurrentPage((curr) => Math.max(1, curr - 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  <span className="sr-only">Go to previous page</span>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 p-0"
+                  onClick={() =>
+                    setCurrentPage((curr) => Math.min(totalPages, curr + 1))
+                  }
+                  disabled={currentPage === totalPages || totalPages === 0}
+                >
+                  <span className="sr-only">Go to next page</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="hidden h-8 w-8 p-0 lg:flex"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages || totalPages === 0}
+                >
+                  <span className="sr-only">Go to last page</span>
+                  <ChevronsRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
